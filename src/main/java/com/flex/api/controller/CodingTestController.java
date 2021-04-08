@@ -1,0 +1,40 @@
+package com.flex.api.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.flex.api.service.CodingTestService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+@RestController
+@RequestMapping("/test")
+@Api(tags = "Test", description = "Test Service APIs", consumes = "application/json", produces = "application/json")
+public class CodingTestController {
+	
+	@Autowired
+	CodingTestService service;
+	
+	@ApiOperation(value = "테스트", notes = "테스트 api")
+	@ApiResponses(value = { //
+			@ApiResponse(code = 200, message = "조회 성공"), //
+			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
+			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
+			@ApiResponse(code = 500, message = "시스템 장애") })
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<String> getScoreCode(@RequestBody String code) {
+		String rtn = service.getScoreCode(code);
+		return new ResponseEntity<String>(rtn, HttpStatus.OK);
+	}
+
+}
