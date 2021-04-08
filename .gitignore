@@ -27,5 +27,3 @@ hs_err_pid*
 /.gradle
 /bin
 /HELP.md
-/gradlew
-/gradlew.bat
