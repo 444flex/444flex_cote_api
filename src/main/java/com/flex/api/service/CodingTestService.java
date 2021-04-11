@@ -1,9 +1,8 @@
 package com.flex.api.service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.flex.api.util.CmdUtil;
@@ -11,16 +10,22 @@ import com.flex.api.util.FileUtil;
 
 @Service
 public class CodingTestService {
+	
+	@Value("${save.file.dir}")
+	private String fileDir;
+	
+	@Value("${save.file.name}")
+	private String fileName;
+	
+	@Value("${save.file.extension}")
+	private String fileExtension;
 
-	public String getTest(String text) {
-		return "1";
-	}
 	
 	public String getScoreCode(String code) {
 		String answer = null;
-		String url = "/Users/jb/git/flex-api/CodingTest.java";
+		String url = fileDir + fileName + fileExtension;
 		StringBuilder sb = new StringBuilder();
-		String publicClass = "public class CodingTest { public static void main(String[] args){System.out.println(new Solution().solution());} }";
+		String publicClass = "public class "+ fileName+" { public static void main(String[] args){System.out.println(new Solution().solution());} }";
 		sb.append(code);
 		sb.append(publicClass);
 		try {
@@ -29,12 +34,9 @@ public class CodingTestService {
 			e.printStackTrace();
 		}
 		
-		String filePath = "/Users/jb/git/flex-api";
-		String fileName = "CodingTest";
 		try {
-			answer = CmdUtil.exec(filePath, fileName);
+			answer = CmdUtil.exec(fileDir, fileName);
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
