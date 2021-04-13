@@ -15,27 +15,35 @@ import com.flex.api.util.ReflectionUtil;
 @Service
 public class CodingTestService {
 	
-	@Value("${save.file.dir}")
-	private String fileDir;
+	@Value("${flex.class.path}")
+	private String classPath;
 	
-	@Value("${save.file.name}")
-	private String fileName;
+	@Value("${flex.class.name}")
+	private String className;
 	
-	@Value("${save.file.extension}")
-	private String fileExtension;
+	@Value("${flex.class.extension}")
+	private String classExtension;
+	
+	@Value("${flex.method.name}")
+	private String methodName;
 
 	
 	public List<Result> getScoreCode(String code) {
-		String answer = null;
-		String url = fileDir + fileName + fileExtension;
+		/*
+		 * 파일 저장
+		 */
+		String url = this.classPath + this.className + this.classExtension;
 		try {
 			FileUtil.saveFile(url, code);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+		/*
+		 * class 만들기
+		 */
 		try {
-			CmdUtil.exec2(fileDir, fileName);
+			CmdUtil.compile(this.classPath, this.className);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -72,19 +80,23 @@ public class CodingTestService {
 		
 		
 		
-		
+		/*
+		 * class 실행
+		 */
 		ReflectionUtil reflection = new ReflectionUtil();
-		reflection.loadClass(fileDir, fileName);
-		reflection.loadMethod(param1.getClass(), param2.getClass());
+		reflection.loadClass(this.classPath, this.className);
+		reflection.loadMethod(this.methodName, param1.getClass(), param2.getClass());
 		
 		List<Result> list = new ArrayList<Result>();
 		
 		for (int i=0; i<param1List.size(); i++) {
 			int[] paramA = param1List.get(i);
 			int[] paramB = param2List.get(i);
+			
 			long s = System.currentTimeMillis();
 			int[] ans = (int[]) reflection.execMethod(paramA, paramB);
 			long e = System.currentTimeMillis();
+			
 			Result result = new Result();
 			
 			if (ans[0] == result1List.get(i)[0] && ans[1] == result1List.get(i)[1]) {

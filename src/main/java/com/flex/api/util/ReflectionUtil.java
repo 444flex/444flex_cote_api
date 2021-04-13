@@ -40,9 +40,9 @@ public class ReflectionUtil {
 		}
 	}
 	
-	public void loadMethod(Class<?> cls1, Class<?> cls2) {
+	public void loadMethod(String methodName, Class<?> cls1, Class<?> cls2) {
 		try {
-			m = cls.getMethod("solution", cls1, cls2);
+			m = cls.getMethod(methodName, cls1, cls2);
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,12 +50,12 @@ public class ReflectionUtil {
 	}
 	
 	public Object execMethod(int[] param1, int[] param2) {
-		Object a = null;
+		Object object = null;
 		try {
-			a = m.invoke(obj, param1, param2);
+			object = m.invoke(obj, param1, param2);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		return a;
+		return object;
 	}
 }

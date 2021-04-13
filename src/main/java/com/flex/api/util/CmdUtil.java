@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class CmdUtil {
 
-	public static String exec(String filePath, String fileName) throws IOException, InterruptedException {
+	public static String exe(String filePath, String fileName) throws IOException, InterruptedException {
 		Process process = null;
 		BufferedReader br = null;
 		StringBuffer buffer = null;
@@ -39,7 +39,7 @@ public class CmdUtil {
 		return buffer.toString();
 	}
 	
-	public static void exec2(String filePath, String fileName) throws InterruptedException {
+	public static void compile(String filePath, String fileName) throws InterruptedException {
 		Process process = null;
 		try {
 			process = Runtime.getRuntime().exec("javac " + filePath + "/" + fileName + ".java");
