@@ -1,5 +1,7 @@
 package com.flex.api.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.flex.api.model.Result;
 import com.flex.api.service.CodingTestService;
 
 import io.swagger.annotations.Api;
@@ -32,9 +35,9 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<String> getScoreCode(@RequestBody String code) {
-		String rtn = service.getScoreCode(code);
-		return new ResponseEntity<String>(rtn, HttpStatus.OK);
+	public ResponseEntity<List<Result>> getScoreCode(@RequestBody String code) {
+		List<Result> rtn = service.getScoreCode(code);
+		return new ResponseEntity<List<Result>>(rtn, HttpStatus.OK);
 	}
 
 }

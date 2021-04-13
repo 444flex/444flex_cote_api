@@ -38,4 +38,21 @@ public class CmdUtil {
 		}
 		return buffer.toString();
 	}
+	
+	public static void exec2(String filePath, String fileName) throws InterruptedException {
+		Process process = null;
+		try {
+			process = Runtime.getRuntime().exec("javac " + filePath + "/" + fileName + ".java");
+			// stream 버퍼를 비워줌으로써 waitFor가 정상적으로 작동 
+			process.getErrorStream().close();
+			process.getInputStream().close();
+			process.getOutputStream().close();
+			process.waitFor();	// 앞에 process 가 끝날때까지 대기,
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			process.destroy();
+		}
+	}
 }
