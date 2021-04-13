@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/flex")
 @Api(tags = "Test", description = "Test Service APIs", consumes = "application/json", produces = "application/json")
 public class CodingTestController {
 	
@@ -33,7 +33,7 @@ public class CodingTestController {
 			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
 			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
 			@ApiResponse(code = 500, message = "시스템 장애") })
-	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	@RequestMapping(value = "/codingTest", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<Result>> getScoreCode(@RequestBody String code) {
 		List<Result> rtn = service.getScoreCode(code);
