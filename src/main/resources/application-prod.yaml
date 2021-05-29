@@ -9,7 +9,7 @@ spring:
       on-profile: prod-blue
 
 server:
-  post:
+  port:
     10101
 
 flex:
@@ -33,7 +33,7 @@ spring:
       on-profile: prod-green
 
 server:
-  post:
+  port:
     10102
 
 flex:
