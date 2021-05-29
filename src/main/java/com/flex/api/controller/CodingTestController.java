@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(tags = "Test", description = "Test Service APIs", consumes = "application/json", produces = "application/json")
 public class CodingTestController {
 
+	@Autowired
 	private Environment env;
 
 	@Autowired
