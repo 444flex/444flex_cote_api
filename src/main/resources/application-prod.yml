@@ -1,0 +1,40 @@
+
+flex:
+  class:
+    path: /Users/jb/git/flex-api/
+    name: Solution
+    extension: .java
+  method:
+    name: solution
+
+---
+
+spring:
+  datasource:
+    url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: dev
+    password: searchdev
+    driver-class-name: com.mysql.jdbc.Driver
+  config:
+    activate:
+      on-profile: prod-blue
+
+server:
+  post:
+    10101
+
+---
+
+spring:
+  datasource:
+    url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: dev
+    password: searchdev
+    driver-class-name: com.mysql.jdbc.Driver
+  config:
+    activate:
+      on-profile: prod-green
+
+server:
+  post:
+    10102
