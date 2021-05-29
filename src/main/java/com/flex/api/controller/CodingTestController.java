@@ -1,9 +1,10 @@
 package com.flex.api.controller;
 
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,10 +25,12 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/flex")
 @Api(tags = "Test", description = "Test Service APIs", consumes = "application/json", produces = "application/json")
 public class CodingTestController {
-	
+
+	private Environment env;
+
 	@Autowired
 	CodingTestService service;
-	
+
 	@ApiOperation(value = "테스트", notes = "테스트 api")
 	@ApiResponses(value = { //
 			@ApiResponse(code = 200, message = "조회 성공"), //
@@ -49,8 +52,14 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@RequestMapping(value = "/time", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<Long> getTime() {
-		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
+	public ResponseEntity getTime() {
+		List<String> profiles = Arrays.asList(env.getActiveProfiles());
+
+		return new ResponseEntity<>(Arrays.stream(env.getActiveProfiles())
+				.findFirst()
+				.orElse(""), HttpStatus.OK);
+
+//		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
 	}
 
 }
