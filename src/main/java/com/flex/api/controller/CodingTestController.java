@@ -1,6 +1,7 @@
 package com.flex.api.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +55,20 @@ public class CodingTestController {
 	@RequestMapping(value = "/time", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity getTime() {
-		List<String> profiles = Arrays.asList(env.getActiveProfiles());
-
-		return new ResponseEntity<>(Arrays.stream(env.getActiveProfiles())
-				.findFirst()
-				.orElse(""), HttpStatus.OK);
-
-//		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
+		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "현재 프로파일", notes = "프로파일 리턴 api")
+	@ApiResponses(value = { //
+			@ApiResponse(code = 200, message = "조회 성공"), //
+			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
+			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
+			@ApiResponse(code = 500, message = "시스템 장애") })
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.OK)
+	public String getProfile(){
+		return Arrays.stream(env.getActiveProfiles())
+				.findFirst()
+				.orElse("");
+	}
 }
