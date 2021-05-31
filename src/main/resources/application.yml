@@ -15,7 +15,6 @@ server:
 management:
   endpoints:
     web:
-      base-path: /health
       path-mapping:
         health : healthcheck
   endpoint:
@@ -45,7 +44,6 @@ spring:
 management:
   endpoints:
     web:
-      base-path: /health
       path-mapping:
         health : healthcheck
   endpoint:
