@@ -20,7 +20,7 @@ management:
         health : healthcheck
   endpoint:
     health:
-      show-details: always
+      show-details: never
 
 flex:
   class:
@@ -50,7 +50,7 @@ management:
         health : healthcheck
   endpoint:
     health:
-      show-details: always
+      show-details: never
 
 server:
   port:
