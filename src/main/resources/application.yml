@@ -12,6 +12,16 @@ server:
   port:
     10101
 
+management:
+  endpoints:
+    web:
+      base-path: /health
+      path-mapping:
+        health : healthcheck
+  endpoint:
+    health:
+      show-details: always
+
 flex:
   class:
     path: /Users/jb/git/flex-api/
@@ -31,6 +41,16 @@ spring:
   config:
     activate:
       on-profile: prod-green
+
+management:
+  endpoints:
+    web:
+      base-path: /health
+      path-mapping:
+        health : healthcheck
+  endpoint:
+    health:
+      show-details: always
 
 server:
   port:
@@ -60,6 +80,16 @@ server:
   port:
     10180
 
+management:
+  endpoints:
+    web:
+      base-path: /health
+      path-mapping:
+        health : healthcheck
+  endpoint:
+    health:
+      show-details: always
+
 flex:
   class:
     path: /Users/jb/git/flex-api/
@@ -84,6 +114,16 @@ spring:
 server:
   port:
     10180
+
+management:
+  endpoints:
+    web:
+      base-path: /health
+      path-mapping:
+        health : healthcheck
+  endpoint:
+    health:
+      show-details: always
 
 flex:
   class:
