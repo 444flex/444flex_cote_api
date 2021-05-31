@@ -25,9 +25,7 @@ public class HttpFilter implements Filter{
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		log.info("#### filter - before ####");
 		chain.doFilter(request, response);
-		log.info("#### filter - after ####");
 		// TODO Auto-generated method stub
 		
 	}
