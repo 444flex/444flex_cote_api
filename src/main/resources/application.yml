@@ -15,6 +15,7 @@ server:
 management:
   endpoints:
     web:
+      base-path: /flex
       path-mapping:
         health : healthcheck
   endpoint:
@@ -44,6 +45,7 @@ spring:
 management:
   endpoints:
     web:
+      base-path: /flex
       path-mapping:
         health : healthcheck
   endpoint:
@@ -81,7 +83,7 @@ server:
 management:
   endpoints:
     web:
-      base-path: /health
+      base-path: /flex
       path-mapping:
         health : healthcheck
   endpoint:
@@ -116,7 +118,7 @@ server:
 management:
   endpoints:
     web:
-      base-path: /health
+      base-path: /flex
       path-mapping:
         health : healthcheck
   endpoint:

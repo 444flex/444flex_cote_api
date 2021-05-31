@@ -14,11 +14,7 @@ public class HttpInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		String uriPath = request.getRequestURI();
-		System.out.println("asdfasdfasfas");
-		if (!isServicePath(uriPath)) {
-			return false;
-		}
-		return true;
+		return isServicePath(uriPath);
 	}
 	
 	@Override
@@ -32,11 +28,7 @@ public class HttpInterceptor implements HandlerInterceptor {
 	}
 	
 	public boolean isServicePath(String uri) {
-		if (uri.startsWith("/flex")) {
-			return true;
-		} else {
-			return false;
-		}
+		return uri.startsWith("/flex");
 	}
 	
 }
