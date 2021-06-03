@@ -1,9 +1,11 @@
 package com.flex.api.controller;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,10 +26,13 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/flex")
 @Api(tags = "Test", description = "Test Service APIs", consumes = "application/json", produces = "application/json")
 public class CodingTestController {
-	
+
+	@Autowired
+	private Environment env;
+
 	@Autowired
 	CodingTestService service;
-	
+
 	@ApiOperation(value = "테스트", notes = "테스트 api")
 	@ApiResponses(value = { //
 			@ApiResponse(code = 200, message = "조회 성공"), //
@@ -49,8 +54,21 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@RequestMapping(value = "/time", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<Long> getTime() {
+	public ResponseEntity getTime() {
 		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "현재 프로파일", notes = "프로파일 리턴 api")
+	@ApiResponses(value = { //
+			@ApiResponse(code = 200, message = "조회 성공"), //
+			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
+			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
+			@ApiResponse(code = 500, message = "시스템 장애") })
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.OK)
+	public String getProfile(){
+		return Arrays.stream(env.getActiveProfiles())
+				.findFirst()
+				.orElse("");
+	}
 }
