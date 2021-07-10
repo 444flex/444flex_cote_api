@@ -39,9 +39,24 @@ public class Answer extends IdGenerationBaseEntity {
 	@NotNull
 	private Integer submitCount;
 	
-	@Column(name = "answer_history_id")
+	@Column(name = "score")
 	@NotNull
-	private Long answerHistoryId;
+	private Integer score;
+	
+	@Column(name = "compile_time")
+	@NotNull
+	private Integer compileTime;
+	
+	@Column(name = "compile_yn")
+	@NotNull
+	private boolean compileYn;
+	
+	@Column(name = "file_name")
+	private String fileName;
+	
+//	@Column(name = "answer_history_id")
+//	@NotNull
+//	private Long answerHistoryId;
 	
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "answer_id")
