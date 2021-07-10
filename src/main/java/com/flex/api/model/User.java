@@ -40,6 +40,10 @@ public class User extends IdGenerationBaseEntity {
 	@ApiModelProperty(notes = "이메일", required = false, example = "naoog@naver.com")
 	private String email;
 	
+	@Column(name = "company")
+	@ApiModelProperty(notes = "소속", required = false, example = "롯데")
+	private String company;
+	
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	@JsonIgnore
