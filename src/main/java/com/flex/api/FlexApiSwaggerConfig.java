@@ -16,7 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-@Profile({ "dev", "stg"})
+@Profile({ "dev", "stg", "prod-blue", "prod-green"})
 public class FlexApiSwaggerConfig extends WebMvcConfigurationSupport{
     @Bean
     public Docket commonApi() {
