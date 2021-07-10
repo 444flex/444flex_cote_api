@@ -59,9 +59,9 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	public User getUser(UserReqDto userReqdto) {
 		if (userRepository.existsByNameAndCellNumber(userReqdto.getName(), userReqdto.getCellNumber())) {
-			throw new RuntimeException("No entity exception");
-		} else {
 			return userRepository.findByNameAndCellNumber(userReqdto.getName(), userReqdto.getCellNumber());
+		} else {
+			throw new RuntimeException("No entity exception");
 		}
 	}
 	
