@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -15,34 +16,26 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "verification")
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-public class User extends IdGenerationBaseEntity {
-	
+public class Verification extends IdGenerationBaseEntity {
 
-	@Column(name = "name")
-	@NotNull
-	@ApiModelProperty(notes = "이름", required = true, example = "전지형")
-	private String name;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "question_id")
+	@JsonIgnore
+	private Question question;
 	
-	@Column(name = "cell_number")
+	@Column(name = "correct_answer")
 	@NotNull
-	@ApiModelProperty(notes = "휴대폰번호", required = true, example = "01063371590")
-	private String cellNumber;
-	
-	@Column(name = "email")
-	@ApiModelProperty(notes = "이메일", required = false, example = "naoog@naver.com")
-	private String email;
+	private String correct_answer;
 	
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "verification_id")
 	@JsonIgnore
-	private List<Answer> answerList;
-	
+	private List<VerificationParam> verificationParamList;
 }

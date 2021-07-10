@@ -106,9 +106,9 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:mysql://www.joonsoo.net:13306/dev_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: SearchDev
-    password: lotte1234!
+    url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: dev
+    password: searchdev
     driver-class-name: com.mysql.jdbc.Driver
 
 server:

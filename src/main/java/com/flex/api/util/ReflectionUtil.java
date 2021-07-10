@@ -7,13 +7,61 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import lombok.Builder;
+import lombok.Setter;
+
 public class ReflectionUtil {
 	
 	private Class<?> cls;
 	private Method m;
 	private Object obj;
-
-	public void loadClass(String fileDir, String fileName) {
+	
+	private ReflectionUtil(Builder builder) {
+		this.loadClass(builder.fileDir, builder.fileName);
+		this.loadMethod(builder.methodName, builder.classes);
+	}
+	
+	public static class Builder {
+		
+		private String fileDir;
+		private String fileName;
+		private String methodName;
+		private Class<?>[] classes;
+		
+		public Builder() {}
+		
+		public Builder(String fileDir, String fileName, String methodName){
+			this.fileDir = fileDir;
+			this.fileName = fileName;
+			this.methodName = methodName;
+		}
+		
+		public Builder fileDir(String fileDir) {
+			this.fileDir = fileDir;
+			return this;
+		}
+		
+		public Builder fileName(String fileName) {
+			this.fileName = fileName;
+			return this;
+		}
+		
+		public Builder methodName(String methodName) {
+			this.methodName = methodName;
+			return this;
+		}
+		
+		public Builder classes(Class<?>... classes) {
+			this.classes = classes;
+			return this;
+		}
+		
+		public ReflectionUtil build() {
+			return new ReflectionUtil(this);
+		}
+	}
+	
+	private void loadClass(String fileDir, String fileName) {
 		try {
 			URL[] urls = {new File(fileDir).toURL()};
 			URLClassLoader ucl = new URLClassLoader(urls);
@@ -40,9 +88,9 @@ public class ReflectionUtil {
 		}
 	}
 	
-	public void loadMethod(String methodName, Class<?> cls1, Class<?> cls2) {
+	private void loadMethod(String methodName, Class<?>... paramCls) {
 		try {
-			m = cls.getMethod(methodName, cls1, cls2);
+			m = cls.getMethod(methodName, paramCls);
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
