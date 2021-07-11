@@ -72,7 +72,7 @@ public class CodingTestController {
 	@GetMapping("/questions")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<Question>> getQuestionList(
-			@RequestHeader(value = "user_id") Long userId
+			//@RequestHeader(value = "user_id") Long userId
 			) {
 		List<Question> list = service.getQuestionList();
 		return new ResponseEntity<List<Question>>(list, HttpStatus.OK);
