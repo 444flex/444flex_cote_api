@@ -71,7 +71,9 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@GetMapping("/questions")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<Question>> getQuestionList() {
+	public ResponseEntity<List<Question>> getQuestionList(
+			@RequestHeader(value = "user_id") Long userId
+			) {
 		List<Question> list = service.getQuestionList();
 		return new ResponseEntity<List<Question>>(list, HttpStatus.OK);
 	}
@@ -105,9 +107,10 @@ public class CodingTestController {
 	@PostMapping("/answer")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<AnswerResDto>> submitAnswer(
+			@RequestHeader(value = "user_id") Long userId,
 			@Valid @RequestBody AnswerReqDto answerReqDto
 			) {
-		List<AnswerResDto> rtn = service.submitAnswer(answerReqDto);
+		List<AnswerResDto> rtn = service.submitAnswer(userId, answerReqDto);
 		return new ResponseEntity<List<AnswerResDto>>(rtn, HttpStatus.OK);
 	}
 	

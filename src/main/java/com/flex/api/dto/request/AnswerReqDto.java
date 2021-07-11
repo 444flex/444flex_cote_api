@@ -7,9 +7,6 @@ import lombok.Data;
 @Data
 public class AnswerReqDto {
 
-	@JsonProperty("user_id")
-	private Long userId;
-	
 	@JsonProperty("question_id")
 	private Long questionId;
 	

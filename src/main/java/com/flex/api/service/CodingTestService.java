@@ -30,6 +30,6 @@ public interface CodingTestService {
 	
 	public List<Verification> getVerificationList(Long id); 
 	
-	public List<AnswerResDto> submitAnswer(AnswerReqDto answerReqDto);
+	public List<AnswerResDto> submitAnswer(Long userId, AnswerReqDto answerReqDto);
 	
 }

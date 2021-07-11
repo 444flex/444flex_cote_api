@@ -160,20 +160,20 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public List<AnswerResDto> submitAnswer(AnswerReqDto answerReqDto) {
+	public List<AnswerResDto> submitAnswer(Long userId, AnswerReqDto answerReqDto) {
 		
 		
 		Question question = this.getQuestion(answerReqDto.getQuestionId());
-		List<AnswerResDto> list = this.getScoreCode(answerReqDto, question);
+		List<AnswerResDto> list = this.getScoreCode(answerReqDto, userId, question);
 		
 		return list;
 	}
 	
-	public List<AnswerResDto> getScoreCode(AnswerReqDto answerReqDto, Question question) {
+	public List<AnswerResDto> getScoreCode(AnswerReqDto answerReqDto, Long userId, Question question) {
 		/*
 		 * 파일 저장
 		 */
-		User user = this.getUser(answerReqDto.getUserId());
+		User user = this.getUser(userId);
 		
 		String path = this.classPath + user.getId() + "/" + question.getId() + "" + "/" + System.currentTimeMillis() + "/";
 		String url = path + this.className + this.classExtension;
