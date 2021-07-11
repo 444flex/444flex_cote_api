@@ -8,7 +8,7 @@ import lombok.Data;
 public class QuestionResDto {
 
 	@JsonProperty("id")
-	private String id;
+	private Long id;
 	
 	@JsonProperty("title")
 	private String title;
