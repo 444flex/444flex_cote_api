@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
     username: dev
     password: searchdev
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     activate:
       on-profile: prod-blue
@@ -11,6 +11,20 @@ spring:
 server:
   port:
     10101
+
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level:
+    root: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
 
 management:
   endpoints:
@@ -24,7 +38,7 @@ management:
 
 flex:
   class:
-    path: /Users/dev/app/flexAPI/code/
+    path: /Users/jb/git/flex-api/
     name: Solution
     extension: .java
   method:
@@ -37,7 +51,7 @@ spring:
     url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
     username: dev
     password: searchdev
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     activate:
       on-profile: prod-green
@@ -56,9 +70,23 @@ server:
   port:
     10102
 
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level:
+    root: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
+
 flex:
   class:
-    path: /Users/dev/app/flexAPI/code/
+    path: /Users/jb/git/flex-api/
     name: Solution
     extension: .java
   method:
@@ -74,7 +102,7 @@ spring:
     url: jdbc:mysql://www.joonsoo.net:13306/dev_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8
     username: SearchDev
     password: lotte1234!
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 server:
   port:
@@ -89,6 +117,20 @@ management:
   endpoint:
     health:
       show-details: always
+
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level:
+    root: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
 
 flex:
   class:
@@ -109,7 +151,7 @@ spring:
     url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
     username: dev
     password: searchdev
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 server:
   port:
@@ -124,6 +166,20 @@ management:
   endpoint:
     health:
       show-details: always
+
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level:
+    root: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
 
 flex:
   class:
