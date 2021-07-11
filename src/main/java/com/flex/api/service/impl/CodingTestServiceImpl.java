@@ -114,24 +114,28 @@ public class CodingTestServiceImpl implements CodingTestService {
 		Question question = this.getQuestion(questionId);
 		List<Parameter> parameterList = this.getParameterList(questionId);
 		Answer answer = this.getAnswer(userId, questionId);
-		
 		BeanUtils.copyProperties(question, questionResDto);
-		StringBuilder sb = new StringBuilder();
 		if (answer == null) {
-			sb.append("public").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
-			for (int i=0; i<parameterList.size(); i++ ){
-				sb.append(parameterList.get(i).getType()).append(" ").append(parameterList.get(i).getName());
-				if (i < parameterList.size()-1) sb.append(", ");
-			}
-			sb.append(") {").append("\n");
-			sb.append("return null;\n");
-			sb.append("}");
-			questionResDto.setCode(sb.toString());
+			String defaultCode = this.getDefaultCode(question, parameterList);
+			questionResDto.setCode(defaultCode);
 		} else {
 			questionResDto.setCode(answer.getCode());
 		}
 		
 		return questionResDto;
+	}
+	
+	private String getDefaultCode(Question question, List<Parameter> parameterList) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("public").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
+		for (int i=0; i<parameterList.size(); i++ ){
+			sb.append(parameterList.get(i).getType()).append(" ").append(parameterList.get(i).getName());
+			if (i < parameterList.size()-1) sb.append(", ");
+		}
+		sb.append(") {").append("\n");
+		sb.append("return null;\n");
+		sb.append("}");
+		return sb.toString();
 	}
 	
 	@Override
@@ -158,30 +162,23 @@ public class CodingTestServiceImpl implements CodingTestService {
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
 	public List<AnswerResDto> submitAnswer(AnswerReqDto answerReqDto) {
 		
-		User user = this.getUser(answerReqDto.getUserId());
+		
 		Question question = this.getQuestion(answerReqDto.getQuestionId());
-		Answer answer = this.getAnswer(question.getId(), user.getId());
-		List<Verification> verificationList = this.getVerificationList(question.getId());
-		List<AnswerResDto> list = this.getScoreCode(answerReqDto.getCode(), question, verificationList, answer, user);
-		// 해당 
+		List<AnswerResDto> list = this.getScoreCode(answerReqDto, question);
 		
 		return list;
 	}
-
-	public List<AnswerResDto> getScoreCode(String code, Question question, List<Verification> verificationList, Answer answer, User user) {
+	
+	public List<AnswerResDto> getScoreCode(AnswerReqDto answerReqDto, Question question) {
 		/*
 		 * 파일 저장
 		 */
+		User user = this.getUser(answerReqDto.getUserId());
+		
 		String path = this.classPath + user.getId() + "/" + question.getId() + "" + "/" + System.currentTimeMillis() + "/";
 		String url = path + this.className + this.classExtension;
-		try {
-			File folder = new File(path);
-			if (!folder.exists())
-				folder.mkdirs();
-			FileUtil.saveFile(url, code);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		this.saveFile(answerReqDto.getCode(), path);
 		
 		/*
 		 * class 만들기
@@ -191,12 +188,10 @@ public class CodingTestServiceImpl implements CodingTestService {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		List<AnswerResDto> list = new ArrayList<AnswerResDto>();
-		List<Parameter> parameters = this.getParameterList(question.getId());
-		
+		List<AnswerResDto> list = this.verify(question, user, answerReqDto.getCode(), path);
+		return list;
+		/*
 		int score = 0;
-		
 		for (Verification verification : verificationList) {
 			try {
 				Object correctAnswer = null;
@@ -271,7 +266,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 		
 		if (answer != null ) answerRepository.save(answer);
 		answerHistoryRepository.save(answerHis);
-		
+		*/
 		
 //		List<int[]> param1List = new ArrayList<int[]>();
 //		List<int[]> param2List = new ArrayList<int[]>();
@@ -338,7 +333,111 @@ public class CodingTestServiceImpl implements CodingTestService {
 			list.add(answerResDto);
 		}
 		*/
+	}
+	
+	private List<AnswerResDto> verify(Question question, User user, String code, String path) {
+		String url = path + this.className + this.classExtension;
+		Answer answer = this.getAnswer(question.getId(), user.getId());
+		List<Verification> verificationList = this.getVerificationList(question.getId());
+		List<Parameter> parameters = this.getParameterList(question.getId());
+		List<AnswerResDto> list = new ArrayList<AnswerResDto>();
+		for (Verification verification : verificationList) {
+			try {
+				Object correctAnswer = null;
+				Object userAnswer = null;
+				List<Object> paramList = new ArrayList<Object>();
+				correctAnswer = declareArray(question.getReturnType(), verification.getCorrectAnswer());
+				userAnswer = declareArray(question.getReturnType(), verification.getCorrectAnswer());
+				
+				for (Parameter param : parameters) {
+					VerificationParam vp = verificationParamRepository.findByVerificationIdAndParameterId(verification.getId(), param.getId());
+					paramList.add(declareArray(param.getType(), vp.getValue()));
+				}
+				
+				
+				int[] paramtest = new int[2];
+				ReflectionUtil reflection = new ReflectionUtil.Builder()
+						.fileDir(path)
+						.fileName(this.className)
+						.methodName(this.methodName)
+						.classes(paramList.get(0).getClass(), paramList.get(1).getClass())
+//						.classes(paramtest.getClass(), paramtest.getClass())
+						.build();
+				
+				long s = System.currentTimeMillis();
+				userAnswer = reflection.execMethod(paramList.get(0), paramList.get(1));
+				long e = System.currentTimeMillis();
+				AnswerResDto answerResDto = new AnswerResDto();
+				if (Objects.deepEquals(correctAnswer, userAnswer)) {
+					System.out.println("true");
+					answerResDto.setCompileYn(true);
+				} else {
+					System.out.println("false");
+					answerResDto.setCompileYn(false);
+				}
+				answerResDto.setCompileTime(e-s);
+				
+				list.add(answerResDto);
+				
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException("Type convert error");
+			}
+		}
+		
+		int score = 0;
+		
+		for (AnswerResDto dto : list) {
+			if (dto.isCompileYn()) 
+				score++;
+		}
+		
+		score = score * 100 / list.size();
+		
+		if (answer == null) {
+			answer = new Answer();
+			answer.setScore(score);
+			answer.setCompileTime(list.get(0).getCompileTime());
+			answer.setCompileYn(list.get(0).isCompileYn());
+			answer.setFileName(url);
+			answer.setCode(code);
+			answer.setQuestion(question);
+			answer.setSubmitCount(0);
+			answer.setUser(user);
+		} else if (answer.getScore() <= score) {
+			answer.setScore(score);
+			answer.setCompileTime(list.get(0).getCompileTime());
+			answer.setCompileYn(list.get(0).isCompileYn());
+			answer.setFileName(url);
+			answer.setCode(code);
+		} else {
+			
+		}
+		
+		answer.addSubmitCount();
+		
+		AnswerHistory answerHis = new AnswerHistory();
+		answerHis.setAnswer(answer);
+		answerHis.setScore(score);
+		answerHis.setCompileTime(list.get(0).getCompileTime());
+		answerHis.setCompileYn(list.get(0).isCompileYn());
+		answerHis.setFileName(url);
+		answerHis.setCode(code);
+		
+		if (answer != null ) answerRepository.save(answer);
+		answerHistoryRepository.save(answerHis);
+		
 		return list;
+	}
+	
+	private void saveFile(String code, String path) {
+		try {
+			File folder = new File(path);
+			if (!folder.exists())
+				folder.mkdirs();
+			FileUtil.saveFile(path + this.className + this.classExtension, code);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private Object declareArray(String type, String value) throws ClassNotFoundException {

@@ -17,8 +17,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "answer")
 @JsonInclude(Include.NON_NULL)
@@ -66,5 +68,7 @@ public class Answer extends IdGenerationBaseEntity {
 	@JsonIgnore
 	private List<AnswerHistory> answerHistoryList;
 	
-	
+	public void addSubmitCount() {
+		this.submitCount++;
+	}
 }
