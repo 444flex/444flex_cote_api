@@ -118,12 +118,12 @@ public class CodingTestServiceImpl implements CodingTestService {
 		BeanUtils.copyProperties(question, questionResDto);
 		StringBuilder sb = new StringBuilder();
 		if (answer == null) {
-			sb.append("public").append("\s").append(question.getReturnType()).append("\s").append(question.getMethodName()).append("\s").append("(");
+			sb.append("public").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
 			for (int i=0; i<parameterList.size(); i++ ){
-				sb.append(parameterList.get(i).getType()).append("\s").append(parameterList.get(i).getName());
-				if (i < parameterList.size()-1) sb.append(", \s");
+				sb.append(parameterList.get(i).getType()).append(" ").append(parameterList.get(i).getName());
+				if (i < parameterList.size()-1) sb.append(", ");
 			}
-			sb.append(")\s{").append("\n");
+			sb.append(") {").append("\n");
 			sb.append("return null;\n");
 			sb.append("}");
 			questionResDto.setCode(sb.toString());
