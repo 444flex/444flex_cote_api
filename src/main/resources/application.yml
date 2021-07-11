@@ -24,7 +24,7 @@ management:
 
 flex:
   class:
-    path: /Users/jb/git/flex-api/
+    path: /Users/dev/app/flexAPI/code/
     name: Solution
     extension: .java
   method:
@@ -58,7 +58,7 @@ server:
 
 flex:
   class:
-    path: /Users/jb/git/flex-api/
+    path: /Users/dev/app/flexAPI/code/
     name: Solution
     extension: .java
   method:

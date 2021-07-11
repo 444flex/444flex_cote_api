@@ -37,7 +37,8 @@ public class FlexApiSwaggerConfig extends WebMvcConfigurationSupport{
                 .build();
     }
     
-    @Override protected void addResourceHandlers(ResourceHandlerRegistry registry) { 
+    @Override 
+    protected void addResourceHandlers(ResourceHandlerRegistry registry) { 
     	registry
     		.addResourceHandler("swagger-ui.html")
     		.addResourceLocations("classpath:/META-INF/resources/");

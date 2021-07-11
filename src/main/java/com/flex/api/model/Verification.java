@@ -32,7 +32,7 @@ public class Verification extends IdGenerationBaseEntity {
 	
 	@Column(name = "correct_answer")
 	@NotNull
-	private String correct_answer;
+	private String correctAnswer;
 	
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "verification_id")

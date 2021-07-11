@@ -45,7 +45,7 @@ public class Answer extends IdGenerationBaseEntity {
 	
 	@Column(name = "compile_time")
 	@NotNull
-	private Integer compileTime;
+	private Long compileTime;
 	
 	@Column(name = "compile_yn")
 	@NotNull
@@ -53,6 +53,9 @@ public class Answer extends IdGenerationBaseEntity {
 	
 	@Column(name = "file_name")
 	private String fileName;
+	
+	@Column(name = "code")
+	private String code;
 	
 //	@Column(name = "answer_history_id")
 //	@NotNull

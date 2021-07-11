@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
+import com.flex.api.dto.response.AnswerResDto;
+import com.flex.api.dto.response.QuestionResDto;
 import com.flex.api.model.Question;
 import com.flex.api.model.Result;
 import com.flex.api.model.User;
@@ -83,9 +86,12 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@GetMapping("/question/{question_id}")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<Question> getQuestionList(@PathVariable("question_id") Long questionId) {
-		Question question = service.getQuestion(questionId);
-		return new ResponseEntity<Question>(question, HttpStatus.OK);
+	public ResponseEntity<QuestionResDto> getQuestionList(
+			@RequestHeader(value = "user_id") Long userId,
+			@PathVariable("question_id") Long questionId
+			) {
+		QuestionResDto questionResDto = service.getQuestion(userId, questionId);
+		return new ResponseEntity<QuestionResDto>(questionResDto, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "답변 제출", notes = "답변 제출")
@@ -98,27 +104,27 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@PostMapping("/answer")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<Result>> updateAnswer(
-			@Valid @RequestBody String code,
-			@RequestHeader(value = "X-Auth-Token", required = true) String authToken) {
-		List<Result> rtn = service.getScoreCode(code);
-		return new ResponseEntity<List<Result>>(rtn, HttpStatus.OK);
+	public ResponseEntity<List<AnswerResDto>> submitAnswer(
+			@Valid @RequestBody AnswerReqDto answerReqDto
+			) {
+		List<AnswerResDto> rtn = service.submitAnswer(answerReqDto);
+		return new ResponseEntity<List<AnswerResDto>>(rtn, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "테스트", notes = "테스트 api")
-	@ApiResponses(value = { //
-			@ApiResponse(code = 200, message = "조회 성공"), //
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
-			@ApiResponse(code = 500, message = "시스템 장애") })
-	@PostMapping("/codingTest")
-	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<Result>> getScoreCode(
-			@Valid @RequestBody String code,
-			@RequestHeader(value = "X-Auth-Token", required = true) String authToken) {
-		List<Result> rtn = service.getScoreCode(code);
-		return new ResponseEntity<List<Result>>(rtn, HttpStatus.OK);
-	}
+//	@ApiOperation(value = "테스트", notes = "테스트 api")
+//	@ApiResponses(value = { //
+//			@ApiResponse(code = 200, message = "조회 성공"), //
+//			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
+//			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
+//			@ApiResponse(code = 500, message = "시스템 장애") })
+//	@PostMapping("/codingTest")
+//	@ResponseStatus(value = HttpStatus.OK)
+//	public ResponseEntity<List<Result>> getScoreCode(
+//			@Valid @RequestBody String code,
+//			@RequestHeader(value = "X-Auth-Token", required = true) String authToken) {
+//		List<Result> rtn = service.submitAnswer(code);
+//		return new ResponseEntity<List<Result>>(rtn, HttpStatus.OK);
+//	}
 	
 	@ApiOperation(value = "현재 시간", notes = "현재 시간 api")
 	@ApiResponses(value = { //

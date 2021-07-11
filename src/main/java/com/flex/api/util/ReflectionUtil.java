@@ -97,7 +97,7 @@ public class ReflectionUtil {
 		}
 	}
 	
-	public Object execMethod(int[] param1, int[] param2) {
+	public Object execMethod(Object param1, Object param2) {
 		Object object = null;
 		try {
 			object = m.invoke(obj, param1, param2);
