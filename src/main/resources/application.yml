@@ -12,6 +12,19 @@ server:
   port:
     10101
 
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
+
 management:
   endpoints:
     web:
@@ -24,7 +37,7 @@ management:
 
 flex:
   class:
-    path: /Users/dev/app/flexAPI/code/
+    path: /Users/jb/git/flex-api/
     name: Solution
     extension: .java
   method:
@@ -56,9 +69,22 @@ server:
   port:
     10102
 
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
+
 flex:
   class:
-    path: /Users/dev/app/flexAPI/code/
+    path: /Users/jb/git/flex-api/
     name: Solution
     extension: .java
   method:
@@ -89,6 +115,19 @@ management:
   endpoint:
     health:
       show-details: always
+
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
 
 flex:
   class:
@@ -124,6 +163,19 @@ management:
   endpoint:
     health:
       show-details: always
+
+logging:
+  file:
+    name: /Users/dev/app/flexAPI/log/server.log
+  level: info
+  pattern:
+    dateformat: yyyy-MM-dd
+    file: '%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p}
+      ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}'
+    level: '%5p'
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
 
 flex:
   class:
