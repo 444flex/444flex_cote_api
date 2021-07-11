@@ -140,6 +140,18 @@ public class CodingTestController {
 	public ResponseEntity<Long> getTime() {
 		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
 	}
+	
+	@ApiOperation(value = "현재 시간", notes = "현재 시간 api")
+	@ApiResponses(value = { //
+			@ApiResponse(code = 200, message = "조회 성공"), //
+			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
+			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
+			@ApiResponse(code = 500, message = "시스템 장애") })
+	@GetMapping("/time2")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<Long> getTime2() {
+		return new ResponseEntity<Long>(new Date().getTime(), HttpStatus.OK);
+	}
 
 	@ApiOperation(value = "현재 프로파일", notes = "프로파일 리턴 api")
 	@ApiResponses(value = { //
