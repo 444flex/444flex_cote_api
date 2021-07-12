@@ -29,6 +29,10 @@ import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.QuestionResDto;
+import com.flex.api.exception.CompileErrorException;
+import com.flex.api.exception.DirectoryCreateFailedException;
+import com.flex.api.exception.EntityNotFoundException;
+import com.flex.api.exception.FileCreateFailedException;
 import com.flex.api.model.Answer;
 import com.flex.api.model.AnswerHistory;
 import com.flex.api.model.Parameter;
@@ -86,16 +90,16 @@ public class CodingTestServiceImpl implements CodingTestService {
 		if (userRepository.existsById(id)) {
 			return userRepository.findById(id).get();
 		} else {
-			throw new RuntimeException("No entity exception");
+			throw new EntityNotFoundException("User", "User is not found. id:" + id,  null);
 		}
 	}
 	
 	@Override
-	public User getUser(UserReqDto userReqdto) {
-		if (userRepository.existsByNameAndCellNumber(userReqdto.getName(), userReqdto.getCellNumber())) {
-			return userRepository.findByNameAndCellNumber(userReqdto.getName(), userReqdto.getCellNumber());
+	public User getUser(UserReqDto userReqDto) {
+		if (userRepository.existsByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber())) {
+			return userRepository.findByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber());
 		} else {
-			throw new RuntimeException("No entity exception");
+			throw new EntityNotFoundException("User", "User is not found. name:" + userReqDto.getName(),  null);
 		}
 	}
 	
@@ -104,7 +108,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 		if (questionRepository.existsById(questionId)) {
 			return questionRepository.findById(questionId).get();
 		} else {
-			throw new RuntimeException("No entity exception");
+			throw new EntityNotFoundException("Question", "Question is not found. id:" + questionId,  null);
 		}
 	}
 	
@@ -186,7 +190,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 		try {
 			CmdUtil.compile(path, this.className);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			throw new CompileErrorException("Compile", "Compile is failed. path:" + path, null);
 		}
 		List<AnswerResDto> list = this.verify(question, user, answerReqDto.getCode(), path);
 		return list;
@@ -380,7 +384,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 				list.add(answerResDto);
 				
 			} catch (ClassNotFoundException e) {
-				throw new RuntimeException("Type convert error");
+				throw new RuntimeException("ClassNotFoundException");
 			}
 		}
 		
@@ -434,9 +438,14 @@ public class CodingTestServiceImpl implements CodingTestService {
 			File folder = new File(path);
 			if (!folder.exists())
 				folder.mkdirs();
+		} catch (Exception e) {
+			throw new DirectoryCreateFailedException("Directory", "Directory path:" + path, null);
+		}
+		
+		try {
 			FileUtil.saveFile(path + this.className + this.classExtension, code);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new FileCreateFailedException("File", "File path:" + path + this.className + this.classExtension, null);
 		}
 	}
 	

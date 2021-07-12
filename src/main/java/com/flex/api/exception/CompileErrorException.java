@@ -3,14 +3,15 @@ package com.flex.api.exception;
 import org.springframework.http.HttpStatus;
 
 @SuppressWarnings("serial")
-public class FileCreateFailedException extends ServerSideException {
+public class CompileErrorException extends ServerSideException {
+
 
 	static final HttpStatus RESPONSE_CODE = HttpStatus.INTERNAL_SERVER_ERROR;
 	static final ErrorType ERROR_TYPE = ErrorType.ServerSystem;
-	static final ErrorReason ERROR_REASON = ErrorReason.FileCreateFailed;
-	static final int ERROR_CODE = 5002;
+	static final ErrorReason ERROR_REASON = ErrorReason.CompileError;
+	static final int ERROR_CODE = 5004;
 	
-	public FileCreateFailedException(String errorTarget, String errorMessage, Throwable cause) {
+	public CompileErrorException(String errorTarget, String errorMessage, Throwable cause) {
 		super(RESPONSE_CODE, ERROR_TYPE, ERROR_REASON, ERROR_CODE, errorTarget, errorMessage, cause);
 	}
 }
