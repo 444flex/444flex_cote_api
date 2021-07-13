@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> handleServiceException(ServiceException e) throws Exception {
 		// 로깅해야댐.. 나중에 elk 스택 해봅시당.
-		
 		return new ResponseEntity<Map<String, Object>>(e.toServiceMessageMap(), e.getResponseCode());
 	}
 	

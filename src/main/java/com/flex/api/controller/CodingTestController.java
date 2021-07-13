@@ -69,8 +69,8 @@ public class CodingTestController {
 			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
 			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
 			@ApiResponse(code = 500, message = "시스템 장애") })
-//	@GetMapping("/questions")
-	@RequestMapping(value = "/questions", method = RequestMethod.GET)
+	@GetMapping("/questions")
+//	@RequestMapping(value = "/questions", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<Question>> getQuestionList( 
 			@RequestHeader(value = "user_id", required = true ) Long userId ) {

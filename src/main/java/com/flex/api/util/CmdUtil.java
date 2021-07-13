@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.flex.api.exception.CompileErrorException;
+
 public class CmdUtil {
 
 	public static String exe(String filePath, String fileName) throws IOException, InterruptedException {
@@ -43,16 +45,20 @@ public class CmdUtil {
 		Process process = null;
 		try {
 			process = Runtime.getRuntime().exec("javac " + filePath + fileName + ".java");
+			
 			// stream 버퍼를 비워줌으로써 waitFor가 정상적으로 작동 
 			process.getErrorStream().close();
 			process.getInputStream().close();
 			process.getOutputStream().close();
 			process.waitFor();	// 앞에 process 가 끝날때까지 대기,
-			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new CompileErrorException("Compile", "Compile is failed. path:" + filePath + fileName + ".java", e);
 		} finally {
 			process.destroy();
+		}
+		
+		if (process != null && process.exitValue() != 0) {
+			throw new CompileErrorException("Compile", "Compile is failed. path:" + filePath + fileName + ".java", null);
 		}
 	}
 }

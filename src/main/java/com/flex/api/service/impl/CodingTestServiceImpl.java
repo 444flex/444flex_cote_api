@@ -174,26 +174,14 @@ public class CodingTestServiceImpl implements CodingTestService {
 	}
 	
 	public List<AnswerResDto> getScoreCode(AnswerReqDto answerReqDto, Long userId, Question question) {
-		/*
-		 * 파일 저장
-		 */
+
 		User user = this.getUser(userId);
-		
 		String path = this.classPath + user.getId() + "/" + question.getId() + "" + "/" + System.currentTimeMillis() + "/";
-		String url = path + this.className + this.classExtension;
 		
 		this.saveFile(answerReqDto.getCode(), path);
-		
-		/*
-		 * class 만들기
-		 */
-		try {
-			CmdUtil.compile(path, this.className);
-		} catch (InterruptedException e) {
-			throw new CompileErrorException("Compile", "Compile is failed. path:" + path, null);
-		}
-		List<AnswerResDto> list = this.verify(question, user, answerReqDto.getCode(), path);
-		return list;
+		this.compileCode(path);
+
+		return this.verify(question, user, answerReqDto.getCode(), path);
 		/*
 		int score = 0;
 		for (Verification verification : verificationList) {
@@ -358,18 +346,18 @@ public class CodingTestServiceImpl implements CodingTestService {
 					paramList.add(declareArray(param.getType(), vp.getValue()));
 				}
 				
-				
-				int[] paramtest = new int[2];
+				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
 				ReflectionUtil reflection = new ReflectionUtil.Builder()
 						.fileDir(path)
 						.fileName(this.className)
 						.methodName(this.methodName)
-						.classes(paramList.get(0).getClass(), paramList.get(1).getClass())
-//						.classes(paramtest.getClass(), paramtest.getClass())
+						.classes(classes)
+//						.classes(paramList.get(0).getClass(), paramList.get(1).getClass())
 						.build();
 				
 				long s = System.currentTimeMillis();
-				userAnswer = reflection.execMethod(paramList.get(0), paramList.get(1));
+//				userAnswer = reflection.execMethod(paramList.get(0), paramList.get(1));
+				userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
 				long e = System.currentTimeMillis();
 				AnswerResDto answerResDto = new AnswerResDto();
 				if (Objects.deepEquals(correctAnswer, userAnswer)) {
@@ -431,6 +419,14 @@ public class CodingTestServiceImpl implements CodingTestService {
 		answerHistoryRepository.save(answerHis);
 		
 		return list;
+	}
+	
+	private void compileCode(String path) {
+		try {
+			CmdUtil.compile(path, this.className);
+		} catch (Exception e) {
+			throw new CompileErrorException("Compile", "Compile is failed. path:" + path, null);
+		}
 	}
 	
 	private void saveFile(String code, String path) {

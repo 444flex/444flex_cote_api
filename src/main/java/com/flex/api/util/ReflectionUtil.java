@@ -6,9 +6,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import lombok.Builder;
-import lombok.Setter;
+import java.util.List;
 
 public class ReflectionUtil {
 	
@@ -97,13 +95,22 @@ public class ReflectionUtil {
 		}
 	}
 	
-	public Object execMethod(Object param1, Object param2) {
+	public Object execMethod(Object... param) {
 		Object object = null;
 		try {
-			object = m.invoke(obj, param1, param2);
+			object = m.invoke(obj, param);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return object;
+	}
+	
+	public static Class<?>[] listToArray(List<Object> list) {
+		Class<?>[] classes = new Class<?>[list.size()];
+		int size = list.size();
+		for(int i=0; i<size; i++) {
+			classes[i] = list.get(i).getClass();
+		}
+		return classes;
 	}
 }
