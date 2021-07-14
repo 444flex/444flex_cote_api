@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -25,6 +27,10 @@ import lombok.Data;
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Parameter extends IdGenerationBaseEntity {
 	
+	public enum Type2 {
+		single, multi
+	}
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "question_id")
 	@JsonIgnore
@@ -33,6 +39,11 @@ public class Parameter extends IdGenerationBaseEntity {
 	@Column(name = "type")
 	@NotNull
 	private String type;
+	
+	@Column(name = "type2")
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private Type2 type2;
 	
 	@Column(name = "name")
 	@NotNull

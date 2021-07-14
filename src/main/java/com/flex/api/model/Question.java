@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -23,6 +25,10 @@ import lombok.Data;
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Question extends IdGenerationBaseEntity {
+	
+	public enum ReturnType2 {
+		single, multi
+	}
 
 	@Column(name = "title")
 	@NotNull
@@ -38,6 +44,11 @@ public class Question extends IdGenerationBaseEntity {
 	@Column(name = "return_type")
 	@NotNull
 	private String returnType;
+	
+	@Column(name = "return_type2")
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private ReturnType2 returnType2;
 	
 	@Column(name = "limit_time")
 	@NotNull

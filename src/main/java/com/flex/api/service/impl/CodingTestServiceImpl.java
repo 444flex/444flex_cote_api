@@ -29,6 +29,7 @@ import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.QuestionResDto;
+import com.flex.api.dto.response.AnswerResDto.TestCase;
 import com.flex.api.exception.CompileErrorException;
 import com.flex.api.exception.DirectoryCreateFailedException;
 import com.flex.api.exception.EntityNotFoundException;
@@ -131,6 +132,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	private String getDefaultCode(Question question, List<Parameter> parameterList) {
 		StringBuilder sb = new StringBuilder();
+		sb.append("public class Solution {\n");
 		sb.append("public").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
 		for (int i=0; i<parameterList.size(); i++ ){
 			sb.append(parameterList.get(i).getType()).append(" ").append(parameterList.get(i).getName());
@@ -138,7 +140,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 		}
 		sb.append(") {").append("\n");
 		sb.append("return null;\n");
-		sb.append("}");
+		sb.append("}\n}");
 		return sb.toString();
 	}
 	
@@ -164,16 +166,14 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public List<AnswerResDto> submitAnswer(Long userId, AnswerReqDto answerReqDto) {
+	public AnswerResDto submitAnswer(Long userId, AnswerReqDto answerReqDto) {
 		
 		
 		Question question = this.getQuestion(answerReqDto.getQuestionId());
-		List<AnswerResDto> list = this.getScoreCode(answerReqDto, userId, question);
-		
-		return list;
+		return this.getScoreCode(answerReqDto, userId, question);
 	}
 	
-	public List<AnswerResDto> getScoreCode(AnswerReqDto answerReqDto, Long userId, Question question) {
+	public AnswerResDto getScoreCode(AnswerReqDto answerReqDto, Long userId, Question question) {
 
 		User user = this.getUser(userId);
 		String path = this.classPath + user.getId() + "/" + question.getId() + "" + "/" + System.currentTimeMillis() + "/";
@@ -182,168 +182,26 @@ public class CodingTestServiceImpl implements CodingTestService {
 		this.compileCode(path);
 
 		return this.verify(question, user, answerReqDto.getCode(), path);
-		/*
-		int score = 0;
-		for (Verification verification : verificationList) {
-			try {
-				Object correctAnswer = null;
-				Object userAnswer = null;
-				List<Object> paramList = new ArrayList<Object>();
-				correctAnswer = declareArray(question.getReturnType(), verification.getCorrectAnswer());
-				userAnswer = declareArray(question.getReturnType(), verification.getCorrectAnswer());
-				
-				for (Parameter param : parameters) {
-					VerificationParam vp = verificationParamRepository.findByVerificationIdAndParameterId(verification.getId(), param.getId());
-					paramList.add(declareArray(param.getType(), vp.getValue()));
-				}
-				
-				
-				int[] paramtest = new int[2];
-				ReflectionUtil reflection = new ReflectionUtil.Builder()
-						.fileDir(this.classPath)
-						.fileName(this.className)
-						.methodName(this.methodName)
-						.classes(paramList.get(0).getClass(), paramList.get(1).getClass())
-//						.classes(paramtest.getClass(), paramtest.getClass())
-						.build();
-				
-				long s = System.currentTimeMillis();
-				userAnswer = reflection.execMethod(paramList.get(0), paramList.get(1));
-				long e = System.currentTimeMillis();
-				AnswerResDto answerResDto = new AnswerResDto();
-				if (Objects.deepEquals(correctAnswer, userAnswer)) {
-					System.out.println("true");
-					answerResDto.setCompileYn(true);
-				} else {
-					System.out.println("false");
-					answerResDto.setCompileYn(false);
-				}
-				answerResDto.setCompileTime(e-s);
-				
-				list.add(answerResDto);
-				
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException("Type convert error");
-			}
-		}
-		
-		if (answer == null) {
-			answer = new Answer();
-			answer.setScore(score);
-			answer.setCompileTime(list.get(0).getCompileTime());
-			answer.setCompileYn(list.get(0).isCompileYn());
-			answer.setFileName(url);
-			answer.setCode(code);
-			answer.setQuestion(question);
-			answer.setSubmitCount(1);
-			answer.setUser(user);
-		} else if (answer.getScore() < score) {
-			answer.setScore(score);
-			answer.setCompileTime(list.get(0).getCompileTime());
-			answer.setCompileYn(list.get(0).isCompileYn());
-			answer.setFileName(url);
-			answer.setCode(code);
-			answer.setSubmitCount(answer.getSubmitCount()+1);
-		} else {
-			
-		}
-		
-		AnswerHistory answerHis = new AnswerHistory();
-		answerHis.setAnswer(answer);
-		answerHis.setScore(score);
-		answerHis.setCompileTime(list.get(0).getCompileTime());
-		answerHis.setCompileYn(list.get(0).isCompileYn());
-		answerHis.setFileName(url);
-		answerHis.setCode(code);
-		
-		if (answer != null ) answerRepository.save(answer);
-		answerHistoryRepository.save(answerHis);
-		*/
-		
-//		List<int[]> param1List = new ArrayList<int[]>();
-//		List<int[]> param2List = new ArrayList<int[]>();
-//		List<int[]> result1List = new ArrayList<int[]>();
-//		
-//		int[] param1 = null;
-//		int[] param2 = null;
-//		int[] result1Array = null;
-//		
-//		
-//		param1 = new int[]{2,3,4,5,7,8};
-//		param1List.add(param1);
-//		param1 = new int[]{0,0,3,4,5,6};
-//		param1List.add(param1);
-//		param1 = new int[]{0,0,0,0,0,0};
-//		param1List.add(param1);
-//		
-//		param2 = new int[]{31,10,45,1,6,19};
-//		param2List.add(param1);
-//		param2 = new int[]{7,8,9,10,11,12};
-//		param2List.add(param1);
-//		param2 = new int[]{23,1,5,22,12,31};
-//		param2List.add(param1);
-//		
-//		result1Array = new int[] {6,6};
-//		result1List.add(result1Array);
-//		result1Array = new int[] {5,6};
-//		result1List.add(result1Array);
-//		result1Array = new int[] {1,6};
-//		result1List.add(result1Array);
-		
-		
-		/*
-		 * class 실행
-		 */
-		/*
-		ReflectionUtil reflection = new ReflectionUtil.Builder()
-				.fileDir(this.classPath)
-				.fileName(this.className)
-				.methodName(this.methodName)
-				.classes(param1.getClass(), param2.getClass())
-				.build();
-		
-		List<AnswerResDto> list = new ArrayList<AnswerResDto>();
-		
-		for (int i=0; i<param1List.size(); i++) {
-			int[] paramA = param1List.get(i);
-			int[] paramB = param2List.get(i);
-			
-			long s = System.currentTimeMillis();
-			int[] ans = (int[]) reflection.execMethod(paramA, paramB);
-			long e = System.currentTimeMillis();
-			
-			AnswerResDto answerResDto = new AnswerResDto();
-			
-			if (ans[0] == result1List.get(i)[0] && ans[1] == result1List.get(i)[1]) {
-				answerResDto.setCompileYn(true);
-			} else {
-				answerResDto.setCompileYn(false);
-			}
-//			result.setAnswer(ans);
-			answerResDto.setCompileTime(e-s);
-//			result.setTimemils(e-s);
-			list.add(answerResDto);
-		}
-		*/
 	}
 	
-	private List<AnswerResDto> verify(Question question, User user, String code, String path) {
+	private AnswerResDto verify(Question question, User user, String code, String path) {
 		String url = path + this.className + this.classExtension;
 		Answer answer = this.getAnswer(question.getId(), user.getId());
 		List<Verification> verificationList = this.getVerificationList(question.getId());
 		List<Parameter> parameters = this.getParameterList(question.getId());
-		List<AnswerResDto> list = new ArrayList<AnswerResDto>();
+//		List<AnswerResDto> list = new ArrayList<AnswerResDto>();
+		AnswerResDto answerResDto = new AnswerResDto();
 		for (Verification verification : verificationList) {
 			try {
 				Object correctAnswer = null;
 				Object userAnswer = null;
 				List<Object> paramList = new ArrayList<Object>();
-				correctAnswer = declareArray(question.getReturnType(), verification.getCorrectAnswer());
-				userAnswer = declareArray(question.getReturnType(), verification.getCorrectAnswer());
+				correctAnswer = declareObject(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+				userAnswer = declareObject(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
 				
 				for (Parameter param : parameters) {
 					VerificationParam vp = verificationParamRepository.findByVerificationIdAndParameterId(verification.getId(), param.getId());
-					paramList.add(declareArray(param.getType(), vp.getValue()));
+					paramList.add(declareObject(param.getType(), vp.getValue(), param.getType2().name()));
 				}
 				
 				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
@@ -352,24 +210,23 @@ public class CodingTestServiceImpl implements CodingTestService {
 						.fileName(this.className)
 						.methodName(this.methodName)
 						.classes(classes)
-//						.classes(paramList.get(0).getClass(), paramList.get(1).getClass())
 						.build();
 				
 				long s = System.currentTimeMillis();
-//				userAnswer = reflection.execMethod(paramList.get(0), paramList.get(1));
 				userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
 				long e = System.currentTimeMillis();
-				AnswerResDto answerResDto = new AnswerResDto();
+//				AnswerResDto answerResDto = new AnswerResDto();
+				
 				if (Objects.deepEquals(correctAnswer, userAnswer)) {
 					System.out.println("true");
-					answerResDto.setCompileYn(true);
+					answerResDto.setTestCase(true, e-s);
 				} else {
 					System.out.println("false");
-					answerResDto.setCompileYn(false);
+					answerResDto.setTestCase(false, e-s);
 				}
-				answerResDto.setCompileTime(e-s);
+//				answerResDto.setCompileTime(e-s);
 				
-				list.add(answerResDto);
+//				list.add(answerResDto);
 				
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException("ClassNotFoundException");
@@ -378,18 +235,23 @@ public class CodingTestServiceImpl implements CodingTestService {
 		
 		int score = 0;
 		
-		for (AnswerResDto dto : list) {
-			if (dto.isCompileYn()) 
-				score++;
+		for (TestCase testCase : answerResDto.getTestCaseList()) {
+			if (testCase.isCompileYn()) score++;
 		}
 		
-		score = score * 100 / list.size();
+//		for (AnswerResDto dto : list) {
+//			if (dto.isCompileYn()) 
+//				score++;
+//		}
+		
+		score = score * 100 / answerResDto.getTestCaseList().size();
+		answerResDto.setScore(score);
 		
 		if (answer == null) {
 			answer = new Answer();
 			answer.setScore(score);
-			answer.setCompileTime(list.get(0).getCompileTime());
-			answer.setCompileYn(list.get(0).isCompileYn());
+//			answer.setCompileTime(list.get(0).getCompileTime());
+//			answer.setCompileYn(list.get(0).isCompileYn());
 			answer.setFileName(url);
 			answer.setCode(code);
 			answer.setQuestion(question);
@@ -397,8 +259,8 @@ public class CodingTestServiceImpl implements CodingTestService {
 			answer.setUser(user);
 		} else if (answer.getScore() <= score) {
 			answer.setScore(score);
-			answer.setCompileTime(list.get(0).getCompileTime());
-			answer.setCompileYn(list.get(0).isCompileYn());
+//			answer.setCompileTime(list.get(0).getCompileTime());
+//			answer.setCompileYn(list.get(0).isCompileYn());
 			answer.setFileName(url);
 			answer.setCode(code);
 		} else {
@@ -410,15 +272,15 @@ public class CodingTestServiceImpl implements CodingTestService {
 		AnswerHistory answerHis = new AnswerHistory();
 		answerHis.setAnswer(answer);
 		answerHis.setScore(score);
-		answerHis.setCompileTime(list.get(0).getCompileTime());
-		answerHis.setCompileYn(list.get(0).isCompileYn());
+//		answerHis.setCompileTime(list.get(0).getCompileTime());
+//		answerHis.setCompileYn(list.get(0).isCompileYn());
 		answerHis.setFileName(url);
 		answerHis.setCode(code);
 		
 		if (answer != null ) answerRepository.save(answer);
 		answerHistoryRepository.save(answerHis);
 		
-		return list;
+		return answerResDto;
 	}
 	
 	private void compileCode(String path) {
@@ -445,6 +307,15 @@ public class CodingTestServiceImpl implements CodingTestService {
 		}
 	}
 	
+	private Object declareSingle(String type, String value) {
+		if (type.equals("int") || type.equals("Integer")) {
+			return (int)Integer.parseInt(value); 
+		} else if (type.equals("String")) {
+			return value;
+		}
+		return value;
+	}
+	
 	private Object declareArray(String type, String value) throws ClassNotFoundException {
 		Object[] copy = null;
 		Object copy2 = null;
@@ -468,7 +339,15 @@ public class CodingTestServiceImpl implements CodingTestService {
 				copy[i] = valueArray[i];
 			}
 		}
-		
 		return copy;
+	}
+	
+	private Object declareObject(String type, String value, String type2) throws ClassNotFoundException {
+		
+		if (type2.equals("single")) {
+			return declareSingle(type, value);
+		} else {
+			return declareArray(type, value);
+		}
 	}
 }

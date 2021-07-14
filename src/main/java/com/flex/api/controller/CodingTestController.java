@@ -70,10 +70,9 @@ public class CodingTestController {
 			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@GetMapping("/questions")
-//	@RequestMapping(value = "/questions", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<Question>> getQuestionList( 
-			@RequestHeader(value = "user_id", required = true ) Long userId ) {
+			@RequestHeader(value = "user_id", required = true) Long userId ) {
 		List<Question> list = service.getQuestionList();
 		return new ResponseEntity<List<Question>>(list, HttpStatus.OK);
 	}
@@ -89,7 +88,7 @@ public class CodingTestController {
 	@GetMapping("/question/{question_id}")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<QuestionResDto> getQuestionList(
-			@RequestHeader(value = "user_id") Long userId,
+			@RequestHeader(value = "user_id", required = true ) Long userId,
 			@PathVariable("question_id") Long questionId
 			) {
 		QuestionResDto questionResDto = service.getQuestion(userId, questionId);
@@ -106,12 +105,12 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@PostMapping("/answer")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<AnswerResDto>> submitAnswer(
-			@RequestHeader(value = "user_id") Long userId,
+	public ResponseEntity<AnswerResDto> submitAnswer(
+			@RequestHeader(value = "user_id", required = true) Long userId,
 			@Valid @RequestBody AnswerReqDto answerReqDto
 			) {
-		List<AnswerResDto> rtn = service.submitAnswer(userId, answerReqDto);
-		return new ResponseEntity<List<AnswerResDto>>(rtn, HttpStatus.OK);
+		AnswerResDto rtn = service.submitAnswer(userId, answerReqDto);
+		return new ResponseEntity<AnswerResDto>(rtn, HttpStatus.OK);
 	}
 	
 //	@ApiOperation(value = "테스트", notes = "테스트 api")
