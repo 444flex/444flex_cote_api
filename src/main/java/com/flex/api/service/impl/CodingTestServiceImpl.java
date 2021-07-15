@@ -133,14 +133,14 @@ public class CodingTestServiceImpl implements CodingTestService {
 	private String getDefaultCode(Question question, List<Parameter> parameterList) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("public class Solution {\n");
-		sb.append("public").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
+		sb.append("\tpublic").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
 		for (int i=0; i<parameterList.size(); i++ ){
 			sb.append(parameterList.get(i).getType()).append(" ").append(parameterList.get(i).getName());
 			if (i < parameterList.size()-1) sb.append(", ");
 		}
 		sb.append(") {").append("\n");
-		sb.append("return null;\n");
-		sb.append("}\n}");
+		sb.append("\t\treturn null;\n");
+		sb.append("\t}\n}");
 		return sb.toString();
 	}
 	
