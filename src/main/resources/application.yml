@@ -38,7 +38,7 @@ management:
 
 flex:
   class:
-    path: /Users/jb/git/flex-api/
+    path: /Users/dev/app/flexAPI/data/
     name: Solution
     extension: .java
   method:
@@ -86,7 +86,7 @@ logging:
 
 flex:
   class:
-    path: /Users/jb/git/flex-api/
+    path: /Users/dev/app/flexAPI/data/
     name: Solution
     extension: .java
   method:
