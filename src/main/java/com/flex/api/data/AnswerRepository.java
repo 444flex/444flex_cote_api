@@ -9,4 +9,6 @@ import com.flex.api.model.Answer;
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
 	
 	public Answer findByQuestionIdAndUserId(Long questionId, Long userId);
+	
+	public boolean existsByUserIdAndQuestionId(Long userId, Long questionId);
 }

@@ -71,4 +71,9 @@ public class Answer extends IdGenerationBaseEntity {
 	public void addSubmitCount() {
 		this.submitCount++;
 	}
+	
+	public void setAnswer(int score) {
+		
+		
+	}
 }

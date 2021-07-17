@@ -3,14 +3,12 @@ package com.flex.api.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.flex.api.data.AnswerHistoryRepository;
 import com.flex.api.data.AnswerRepository;
-import com.flex.api.data.FlexTxManager;
 import com.flex.api.data.ParameterRepository;
 import com.flex.api.data.QuestionRepository;
 import com.flex.api.data.UserRepository;
@@ -27,9 +24,10 @@ import com.flex.api.data.VerificationParamRepository;
 import com.flex.api.data.VerificationRepository;
 import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
+import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
-import com.flex.api.dto.response.QuestionResDto;
 import com.flex.api.dto.response.AnswerResDto.TestCase;
+import com.flex.api.dto.response.QuestionResDto;
 import com.flex.api.exception.CompileErrorException;
 import com.flex.api.exception.DirectoryCreateFailedException;
 import com.flex.api.exception.EntityNotFoundException;
@@ -38,7 +36,6 @@ import com.flex.api.model.Answer;
 import com.flex.api.model.AnswerHistory;
 import com.flex.api.model.Parameter;
 import com.flex.api.model.Question;
-import com.flex.api.model.Result;
 import com.flex.api.model.User;
 import com.flex.api.model.Verification;
 import com.flex.api.model.VerificationParam;
@@ -52,19 +49,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CodingTestServiceImpl implements CodingTestService {
-	
-//	@Transactional(propagation = Propagation.REQUIRED)
-//	public void updateTimeList(List<Question> list) {
-//		for (Question s : list) {
-//			this.updateTime(s);
-//		}
-//	}
-//	
-//	@Transactional(propagation = Propagation.REQUIRES_NEW)
-//	public void updateTime(Question q) {
-//		return repository.save(q);
-//	}
-//	private final FlexTxManager flexTxManager;
 	
 	private final QuestionRepository questionRepository;
 	private final UserRepository userRepository;
@@ -150,8 +134,15 @@ public class CodingTestServiceImpl implements CodingTestService {
 	}
 	
 	@Override
-	public Answer getAnswer(Long questionId, Long userId) {
+	public Answer getAnswer(Long userId, Long questionId) {
 		return answerRepository.findByQuestionIdAndUserId(questionId, userId);
+	}
+	
+	@Override
+	public AnswerCheckResDto checkSubmitAnswer(Long userId, Long questionId) {
+		User user = this.getUser(userId);
+		Question question = this.getQuestion(questionId);
+		return new AnswerCheckResDto(answerRepository.existsByUserIdAndQuestionId(user.getId(), question.getId()));
 	}
 	
 	@Override
@@ -186,10 +177,9 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	private AnswerResDto verify(Question question, User user, String code, String path) {
 		String url = path + this.className + this.classExtension;
-		Answer answer = this.getAnswer(question.getId(), user.getId());
+		Answer answer = this.getAnswer(user.getId(), question.getId());
 		List<Verification> verificationList = this.getVerificationList(question.getId());
 		List<Parameter> parameters = this.getParameterList(question.getId());
-//		List<AnswerResDto> list = new ArrayList<AnswerResDto>();
 		AnswerResDto answerResDto = new AnswerResDto();
 		for (Verification verification : verificationList) {
 			try {
@@ -215,7 +205,6 @@ public class CodingTestServiceImpl implements CodingTestService {
 				long s = System.currentTimeMillis();
 				userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
 				long e = System.currentTimeMillis();
-//				AnswerResDto answerResDto = new AnswerResDto();
 				
 				if (Objects.deepEquals(correctAnswer, userAnswer)) {
 					System.out.println("true");
@@ -224,10 +213,6 @@ public class CodingTestServiceImpl implements CodingTestService {
 					System.out.println("false");
 					answerResDto.setTestCase(false, e-s);
 				}
-//				answerResDto.setCompileTime(e-s);
-				
-//				list.add(answerResDto);
-				
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException("ClassNotFoundException");
 			}
@@ -239,19 +224,12 @@ public class CodingTestServiceImpl implements CodingTestService {
 			if (testCase.isCompileYn()) score++;
 		}
 		
-//		for (AnswerResDto dto : list) {
-//			if (dto.isCompileYn()) 
-//				score++;
-//		}
-		
 		score = score * 100 / answerResDto.getTestCaseList().size();
 		answerResDto.setScore(score);
 		
 		if (answer == null) {
 			answer = new Answer();
 			answer.setScore(score);
-//			answer.setCompileTime(list.get(0).getCompileTime());
-//			answer.setCompileYn(list.get(0).isCompileYn());
 			answer.setFileName(url);
 			answer.setCode(code);
 			answer.setQuestion(question);
@@ -259,23 +237,14 @@ public class CodingTestServiceImpl implements CodingTestService {
 			answer.setUser(user);
 		} else if (answer.getScore() <= score) {
 			answer.setScore(score);
-//			answer.setCompileTime(list.get(0).getCompileTime());
-//			answer.setCompileYn(list.get(0).isCompileYn());
 			answer.setFileName(url);
 			answer.setCode(code);
-		} else {
-			
 		}
 		
 		answer.addSubmitCount();
 		
 		AnswerHistory answerHis = new AnswerHistory();
-		answerHis.setAnswer(answer);
-		answerHis.setScore(score);
-//		answerHis.setCompileTime(list.get(0).getCompileTime());
-//		answerHis.setCompileYn(list.get(0).isCompileYn());
-		answerHis.setFileName(url);
-		answerHis.setCode(code);
+		answerHis.setAnswerHistory(answer, score, url, code);
 		
 		if (answer != null ) answerRepository.save(answer);
 		answerHistoryRepository.save(answerHis);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
+import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.QuestionResDto;
 import com.flex.api.model.Answer;
@@ -24,7 +25,9 @@ public interface CodingTestService {
 	
 	public List<Question> getQuestionList();
 	
-	public Answer getAnswer(Long questionId, Long userId);
+	public Answer getAnswer(Long userId, Long questionId);
+	
+	public AnswerCheckResDto checkSubmitAnswer(Long userId, Long questionId);
 	
 	public List<Parameter> getParameterList(Long questionId);
 	

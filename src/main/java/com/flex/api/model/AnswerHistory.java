@@ -47,4 +47,11 @@ public class AnswerHistory extends IdGenerationBaseEntity {
 	
 	@Column(name = "code")
 	private String code;
+	
+	public void setAnswerHistory(Answer answer, int score, String url, String code) {
+		this.setAnswer(answer);
+		this.setScore(score);
+		this.setFileName(url);
+		this.setCode(code);
+	}
 }
