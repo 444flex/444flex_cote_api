@@ -41,10 +41,21 @@ public class CmdUtil {
 		return buffer.toString();
 	}
 	
-	public static void compile(String filePath, String fileName) throws InterruptedException {
+	public static void compile(String filePath, String fileName) {
 		Process process = null;
+		StringBuffer readBuffer = null;
 		try {
 			process = Runtime.getRuntime().exec("javac " + filePath + fileName + ".java");
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			String line = null;
+			readBuffer = new StringBuffer();
+			while((line = br.readLine()) != null) {
+				readBuffer.append(line);
+				readBuffer.append("\n");
+			}
+//			System.out.println(readBuffer.toString().replaceAll(filePath, ""));
+			br.close();
 			
 			// stream 버퍼를 비워줌으로써 waitFor가 정상적으로 작동 
 			process.getErrorStream().close();
@@ -58,7 +69,7 @@ public class CmdUtil {
 		}
 		
 		if (process != null && process.exitValue() != 0) {
-			throw new CompileErrorException("Compile", "Compile is failed. path:" + filePath + fileName + ".java", null);
+			throw new CompileErrorException("Compile", readBuffer.toString().replaceAll(filePath, ""), null);
 		}
 	}
 }

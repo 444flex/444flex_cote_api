@@ -253,11 +253,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 	}
 	
 	private void compileCode(String path) {
-		try {
-			CmdUtil.compile(path, this.className);
-		} catch (Exception e) {
-			throw new CompileErrorException("Compile", "Compile is failed. path:" + path, null);
-		}
+		CmdUtil.compile(path, this.className);
 	}
 	
 	private void saveFile(String code, String path) {
