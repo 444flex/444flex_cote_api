@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.AnswerResDto.TestCase;
 import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.exception.DirectoryCreateFailedException;
+import com.flex.api.exception.EntityNotFoundException;
 import com.flex.api.exception.EntityNotModifyException;
 import com.flex.api.exception.FileCreateFailedException;
 import com.flex.api.model.Answer;
@@ -59,6 +62,9 @@ public class AnswerServiceImpl implements AnswerService {
 	
 	@Value("${flex.method.name}")
 	private String methodName;
+	
+	@Value("${flex.thread.size:10}")
+	private Integer threadSize;
 
 	private final AnswerRepository answerRepository;
 	private final AnswerHistoryRepository answerHistoryRepository;
@@ -76,10 +82,18 @@ public class AnswerServiceImpl implements AnswerService {
 	}
 
 	@Override
-	public AnswerCheckResDto checkSubmitAnswer(Long userId, Long questionId) {
+	public AnswerSubmitResDto checkSubmitAnswer(Long userId, Long questionId) {
 		User user = userService.getUser(userId);
 		Question question = questionService.getQuestion(questionId);
-		return new AnswerCheckResDto(answerRepository.existsByUserIdAndQuestionId(user.getId(), question.getId()));
+		Answer answer = this.getAnswer(user.getId(), question.getId());
+		AnswerSubmitResDto answerSubmitResDto = new AnswerSubmitResDto();
+		if (answer == null) {
+			throw new EntityNotFoundException("Answer", "Answer is not found. user:" + userId, null);
+		} else {
+			BeanUtils.copyProperties(answer, answerSubmitResDto);
+		}
+		
+		return answerSubmitResDto;
 	}
 	
 	@Override
@@ -127,6 +141,11 @@ public class AnswerServiceImpl implements AnswerService {
 		AnswerResDto answerResDto = new AnswerResDto();
 		for (Verification verification : verificationList) {
 			try {
+//				ExecutorService executor = Executors.newSingleThreadExecutor();
+//				Callable task = new Callable() {
+//					
+//				};
+				
 				Object correctAnswer = null;
 				Object userAnswer = null;
 				List<Object> paramList = new ArrayList<Object>();

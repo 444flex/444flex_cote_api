@@ -10,7 +10,7 @@ public interface AnswerService {
 
 	public Answer getAnswer(Long userId, Long questionId);
 	
-	public AnswerCheckResDto checkSubmitAnswer(Long userId, Long questionId);
+	public AnswerSubmitResDto checkSubmitAnswer(Long userId, Long questionId);
 	
 	public AnswerResDto insertAnswer(Long userId, AnswerReqDto answerReqDto);
 	

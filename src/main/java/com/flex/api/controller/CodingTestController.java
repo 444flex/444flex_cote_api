@@ -152,12 +152,12 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@GetMapping("/answer/check/{question_id}")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<AnswerCheckResDto> submitAnswerCheck(
+	public ResponseEntity<AnswerSubmitResDto> submitAnswerCheck(
 			@RequestHeader(value = "user_id", required = true) Long userId,
 			@PathVariable("question_id") Long questionId
 			) {
-		AnswerCheckResDto answerCheckResDto = answerService.checkSubmitAnswer(userId, questionId);
-		return new ResponseEntity<AnswerCheckResDto>(answerCheckResDto, HttpStatus.OK);
+		AnswerSubmitResDto answerSubmitResDto = answerService.checkSubmitAnswer(userId, questionId);
+		return new ResponseEntity<AnswerSubmitResDto>(answerSubmitResDto, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "현재 시간", notes = "현재 시간 api")
