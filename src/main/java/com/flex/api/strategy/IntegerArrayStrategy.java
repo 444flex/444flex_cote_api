@@ -8,7 +8,7 @@ public class IntegerArrayStrategy implements ObjectStrategy {
 	private static final String TYPE = "java.lang.Integer";
 
 	@Override
-	public Object getTypeAndValue(String type, String value) throws ClassNotFoundException {
+	public Object getTypeAndValue(String value) throws ClassNotFoundException {
 		Object[] copy = null;
 		Object copy2 = null;
 		String[] valueArray = value.replace("{", "").replace("}", "").split(",");

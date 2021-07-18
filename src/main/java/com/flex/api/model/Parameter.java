@@ -27,6 +27,10 @@ import lombok.Data;
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Parameter extends IdGenerationBaseEntity {
 	
+	public enum Type {
+		Integer, String
+	}
+	
 	public enum Type2 {
 		single, multi
 	}

@@ -40,6 +40,11 @@ import com.flex.api.model.User;
 import com.flex.api.model.Verification;
 import com.flex.api.model.VerificationParam;
 import com.flex.api.service.CodingTestService;
+import com.flex.api.strategy.IntegerArrayStrategy;
+import com.flex.api.strategy.IntegerStrategy;
+import com.flex.api.strategy.ObjectStrategy;
+import com.flex.api.strategy.StringArrayStrategy;
+import com.flex.api.strategy.StringStrategy;
 import com.flex.api.util.CmdUtil;
 import com.flex.api.util.FileUtil;
 import com.flex.api.util.ReflectionUtil;
@@ -196,12 +201,12 @@ public class CodingTestServiceImpl implements CodingTestService {
 				Object correctAnswer = null;
 				Object userAnswer = null;
 				List<Object> paramList = new ArrayList<Object>();
-				correctAnswer = declareObject(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-				userAnswer = declareObject(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+				correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+				userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
 				
 				for (Parameter param : parameters) {
 					VerificationParam vp = verificationParamRepository.findByVerificationIdAndParameterId(verification.getId(), param.getId());
-					paramList.add(declareObject(param.getType(), vp.getValue(), param.getType2().name()));
+					paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
 				}
 				
 				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
@@ -282,47 +287,21 @@ public class CodingTestServiceImpl implements CodingTestService {
 		}
 	}
 	
-	private Object declareSingle(String type, String value) {
-		if (type.equals("int") || type.equals("Integer")) {
-			return (int)Integer.parseInt(value); 
-		} else if (type.equals("String")) {
-			return value;
-		}
-		return value;
-	}
-	
-	private Object declareArray(String type, String value) throws ClassNotFoundException {
-		Object[] copy = null;
-		Object copy2 = null;
-		String[] valueArray = value.replace("{", "").replace("}", "").split(",");
-		if (type.equals("int[]")) {
-			Class<?> cls = Class.forName("java.lang.Integer");
-			Object array = Array.newInstance(cls, valueArray.length);
-			Class<?> arrayType = array.getClass();
-			copy = Arrays.copyOf((Object[])arrayType.cast(array), Array.getLength(array));
-			for (int i=0; i<valueArray.length; i++) {
-				copy[i] = Integer.parseInt(valueArray[i]);
+	private Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
+		ObjectStrategy object = null;
+		if (type2.equals(Parameter.Type2.single.name())) {
+			if (type.equals("int") || type.equals("Integer")) {
+				object = new IntegerStrategy();
+			} else if (type.equals("String")) {
+				object = new StringStrategy();
 			}
-			copy2 = Arrays.stream(copy).mapToInt(i->(int)i).toArray();
-			return copy2;
-		} else if (type.equals("String[]")) {
-			Class<?> cls = Class.forName("java.lang.String");
-			Object array = Array.newInstance(cls, valueArray.length);
-			Class<?> arrayType = array.getClass();
-			copy = Arrays.copyOf((Object[])arrayType.cast(array), Array.getLength(array));
-			for (int i=0; i<valueArray.length; i++) {
-				copy[i] = valueArray[i];
-			}
-		}
-		return copy;
-	}
-	
-	private Object declareObject(String type, String value, String type2) throws ClassNotFoundException {
-		
-		if (type2.equals("single")) {
-			return declareSingle(type, value);
 		} else {
-			return declareArray(type, value);
+			if (type.equals("int[]")) {
+				object = new IntegerArrayStrategy();
+			} else if (type.equals("String[]")) {
+				object = new StringArrayStrategy();
+			}
 		}
+		return object.getTypeAndValue(value);
 	}
 }
