@@ -15,4 +15,6 @@ public interface AnswerService {
 	public AnswerResDto insertAnswer(Long userId, AnswerReqDto answerReqDto);
 	
 	public AnswerSubmitResDto updateAnswer(Long userId, AnswerReqDto answerReqDto);
+	
+	public void deleteAnswerAndHistory(Long userId, Long questionId);
 }

@@ -2,6 +2,7 @@ package com.flex.api.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -64,8 +65,8 @@ public class Answer extends IdGenerationBaseEntity {
 //	@NotNull
 //	private Long answerHistoryId;
 	
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "answer_id")
+	@OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//	@JoinColumn(name = "answer_id")
 	@JsonIgnore
 	private List<AnswerHistory> answerHistoryList;
 	

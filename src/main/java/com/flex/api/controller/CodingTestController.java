@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -158,6 +159,24 @@ public class CodingTestController {
 			) {
 		AnswerSubmitResDto answerSubmitResDto = answerService.checkSubmitAnswer(userId, questionId);
 		return new ResponseEntity<AnswerSubmitResDto>(answerSubmitResDto, HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "답변 초기화", notes = "답변 완전 삭제")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "조회 성공"),
+			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
+			@ApiResponse(code = 401, message = "사용자 인증 실패"),
+			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
+			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
+			@ApiResponse(code = 500, message = "시스템 장애") })
+	@DeleteMapping("/answer/{question_id}")
+	@ResponseStatus(value = HttpStatus.NO_CONTENT)
+	public ResponseEntity<Void> deleteAnswer(
+			@RequestHeader(value = "user_id", required = true) Long userId,
+			@PathVariable("question_id") Long questionId
+			) {
+		answerService.deleteAnswerAndHistory(userId, questionId);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	@ApiOperation(value = "현재 시간", notes = "현재 시간 api")

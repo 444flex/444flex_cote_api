@@ -115,6 +115,14 @@ public class AnswerServiceImpl implements AnswerService {
 		return resDto;
 	}
 	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+	public void deleteAnswerAndHistory(Long userId, Long questionId) {
+		Answer answer = this.getAnswer(userId, questionId);
+//		answer.setSubmitYn(false);
+		answerRepository.delete(answer);
+	}
+	
 	public Answer submitAnswer(Answer answer) {
 		answer.setSubmitYn(true);
 		return answerRepository.save(answer);
