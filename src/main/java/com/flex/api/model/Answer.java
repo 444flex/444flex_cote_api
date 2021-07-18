@@ -46,11 +46,9 @@ public class Answer extends IdGenerationBaseEntity {
 	private Integer score;
 	
 	@Column(name = "compile_time")
-	@NotNull
 	private Long compileTime;
 	
 	@Column(name = "compile_yn")
-	@NotNull
 	private boolean compileYn;
 	
 	@Column(name = "file_name")

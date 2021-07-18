@@ -80,12 +80,23 @@ public class CodingTestServiceImpl implements CodingTestService {
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
 	public User getUser(UserReqDto userReqDto) {
 		if (userRepository.existsByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber())) {
-			return userRepository.findByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber());
+			User user = userRepository.findByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber());
+			user = this.updateUserFirstLoginTime(user);
+			return user;
 		} else {
 			throw new EntityNotFoundException("User", "User is not found. name:" + userReqDto.getName(),  null);
 		}
+	}
+	
+	public User updateUserFirstLoginTime(User user) {
+		if (user.getFirstLoginTime() == null) {
+			user.setFirstLoginTime();
+			return userRepository.save(user);
+		}
+		return user;
 	}
 	
 	@Override
@@ -158,7 +169,6 @@ public class CodingTestServiceImpl implements CodingTestService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
 	public AnswerResDto submitAnswer(Long userId, AnswerReqDto answerReqDto) {
-		
 		
 		Question question = this.getQuestion(answerReqDto.getQuestionId());
 		return this.getScoreCode(answerReqDto, userId, question);

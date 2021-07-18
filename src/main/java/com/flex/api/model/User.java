@@ -1,5 +1,6 @@
 package com.flex.api.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -49,4 +50,10 @@ public class User extends IdGenerationBaseEntity {
 	@JsonIgnore
 	private List<Answer> answerList;
 	
+	@Column(name = "first_login_time", insertable = false, updatable = true)
+	private LocalDateTime firstLoginTime;
+	
+	public void setFirstLoginTime() {
+		this.firstLoginTime = LocalDateTime.now();
+	}
 }
