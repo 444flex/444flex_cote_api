@@ -24,7 +24,7 @@ import lombok.Data;
 @Table(name = "question")
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-public class Question extends IdGenerationBaseEntity {
+public class Question extends IdGenerationBaseEntity implements Cloneable {
 	
 	public enum ReturnType2 {
 		single, multi

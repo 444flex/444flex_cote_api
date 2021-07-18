@@ -10,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,10 +28,12 @@ import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.dto.response.QuestionResDto;
-import com.flex.api.exception.ClientRequestDataInvalidException;
 import com.flex.api.model.Question;
 import com.flex.api.model.User;
-import com.flex.api.service.impl.CodingTestServiceImpl;
+import com.flex.api.service.AnswerService;
+import com.flex.api.service.QuestionService;
+import com.flex.api.service.UserService;
+import com.flex.api.util.ErrorUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,7 +49,9 @@ import lombok.RequiredArgsConstructor;
 public class CodingTestController {
 
 	private final Environment env;
-	private final CodingTestServiceImpl service;
+	private final UserService userService;
+	private final QuestionService questionService;
+	private final AnswerService answerService;
 	
 	@ApiOperation(value = "로그인", notes = "로그인")
 	@ApiResponses(value = {
@@ -63,7 +66,7 @@ public class CodingTestController {
 	public ResponseEntity<User> login(
 			@RequestBody UserReqDto userReqDto
 			) {
-		User user = service.getUser(userReqDto);
+		User user = userService.getUser(userReqDto);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 	
@@ -79,7 +82,7 @@ public class CodingTestController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<Question>> getQuestionList( 
 			@RequestHeader(value = "user_id", required = true) Long userId ) {
-		List<Question> list = service.getQuestionList();
+		List<Question> list = questionService.getQuestionList(userId);
 		return new ResponseEntity<List<Question>>(list, HttpStatus.OK);
 	}
 	
@@ -97,7 +100,7 @@ public class CodingTestController {
 			@RequestHeader(value = "user_id", required = true ) Long userId,
 			@PathVariable("question_id") Long questionId
 			) {
-		QuestionResDto questionResDto = service.getQuestion(userId, questionId);
+		QuestionResDto questionResDto = questionService.getQuestion(userId, questionId);
 		return new ResponseEntity<QuestionResDto>(questionResDto, HttpStatus.OK);
 	}
 	
@@ -115,13 +118,8 @@ public class CodingTestController {
 			@RequestHeader(value = "user_id", required = true) Long userId,
 			@RequestBody @Valid AnswerReqDto answerReqDto, BindingResult bindingResult
 			) {
-		if (bindingResult.hasErrors()) {
-			StringBuilder sb = new StringBuilder();
-			for (ObjectError error : bindingResult.getAllErrors())
-				sb.append(error.getDefaultMessage()).append("\n");
-			throw new ClientRequestDataInvalidException(bindingResult.getAllErrors().get(0).getObjectName(), sb.toString(), null);
-		}
-		AnswerResDto answerResDto = service.insertAnswer(userId, answerReqDto);
+		ErrorUtils.checkBindingResult(bindingResult);
+		AnswerResDto answerResDto = answerService.insertAnswer(userId, answerReqDto);
 		return new ResponseEntity<AnswerResDto>(answerResDto, HttpStatus.OK);
 	}
 	
@@ -133,13 +131,14 @@ public class CodingTestController {
 			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
 			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
 			@ApiResponse(code = 500, message = "시스템 장애") })
-	@PutMapping("/answer/{question_id}")
+	@PutMapping("/answer")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<AnswerSubmitResDto> updateAnswer(
 			@RequestHeader(value = "user_id", required = true) Long userId,
-			@PathVariable("question_id") Long questionId
+			@RequestBody @Valid AnswerReqDto answerReqDto, BindingResult bindingResult
 			) {
-		AnswerSubmitResDto answerSubmitResDto = service.updateAnswer(userId, questionId);
+		ErrorUtils.checkBindingResult(bindingResult);
+		AnswerSubmitResDto answerSubmitResDto = answerService.updateAnswer(userId, answerReqDto);
 		return new ResponseEntity<AnswerSubmitResDto>(answerSubmitResDto, HttpStatus.OK);
 	}
 	
@@ -157,7 +156,7 @@ public class CodingTestController {
 			@RequestHeader(value = "user_id", required = true) Long userId,
 			@PathVariable("question_id") Long questionId
 			) {
-		AnswerCheckResDto answerCheckResDto = service.checkSubmitAnswer(userId, questionId);
+		AnswerCheckResDto answerCheckResDto = answerService.checkSubmitAnswer(userId, questionId);
 		return new ResponseEntity<AnswerCheckResDto>(answerCheckResDto, HttpStatus.OK);
 	}
 	

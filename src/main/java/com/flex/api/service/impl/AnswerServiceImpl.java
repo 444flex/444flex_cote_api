@@ -2,9 +2,7 @@ package com.flex.api.service.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,21 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.flex.api.data.AnswerHistoryRepository;
 import com.flex.api.data.AnswerRepository;
-import com.flex.api.data.ParameterRepository;
-import com.flex.api.data.QuestionRepository;
-import com.flex.api.data.UserRepository;
-import com.flex.api.data.VerificationParamRepository;
-import com.flex.api.data.VerificationRepository;
 import com.flex.api.dto.request.AnswerReqDto;
-import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
-import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.dto.response.AnswerResDto.TestCase;
-import com.flex.api.dto.response.QuestionResDto;
-import com.flex.api.exception.CompileErrorException;
+import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.exception.DirectoryCreateFailedException;
-import com.flex.api.exception.EntityNotFoundException;
 import com.flex.api.exception.EntityNotModifyException;
 import com.flex.api.exception.FileCreateFailedException;
 import com.flex.api.model.Answer;
@@ -41,7 +30,9 @@ import com.flex.api.model.Question;
 import com.flex.api.model.User;
 import com.flex.api.model.Verification;
 import com.flex.api.model.VerificationParam;
-import com.flex.api.service.CodingTestService;
+import com.flex.api.service.AnswerService;
+import com.flex.api.service.QuestionService;
+import com.flex.api.service.UserService;
 import com.flex.api.strategy.IntegerArrayStrategy;
 import com.flex.api.strategy.IntegerStrategy;
 import com.flex.api.strategy.ObjectStrategy;
@@ -55,15 +46,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CodingTestServiceImpl implements CodingTestService {
-	
-	private final QuestionRepository questionRepository;
-	private final UserRepository userRepository;
-	private final ParameterRepository parameterRepository;
-	private final VerificationRepository verificationRepository;
-	private final VerificationParamRepository verificationParamRepository;
-	private final AnswerRepository answerRepository;
-	private final AnswerHistoryRepository answerHistoryRepository;
+public class AnswerServiceImpl implements AnswerService {
 	
 	@Value("${flex.class.path}")
 	private String classPath;
@@ -76,117 +59,42 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	@Value("${flex.method.name}")
 	private String methodName;
+
+	private final AnswerRepository answerRepository;
+	private final AnswerHistoryRepository answerHistoryRepository;
 	
-	@Override
-	public User getUser(Long id) {
-		if (userRepository.existsById(id)) {
-			return userRepository.findById(id).get();
-		} else {
-			throw new EntityNotFoundException("User", "User is not found. id:" + id,  null);
-		}
-	}
-	
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public User getUser(UserReqDto userReqDto) {
-		if (userRepository.existsByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber())) {
-			User user = userRepository.findByNameAndCellNumber(userReqDto.getName(), userReqDto.getCellNumber());
-			user = this.updateUserFirstLoginTime(user);
-			return user;
-		} else {
-			throw new EntityNotFoundException("User", "User is not found. name:" + userReqDto.getName(),  null);
-		}
-	}
-	
-	public User updateUserFirstLoginTime(User user) {
-		if (user.getFirstLoginTime() == null) {
-			user.setFirstLoginTime();
-			return userRepository.save(user);
-		}
-		return user;
-	}
-	
-	@Override
-	public Question getQuestion(Long questionId) {
-		if (questionRepository.existsById(questionId)) {
-			return questionRepository.findById(questionId).get();
-		} else {
-			throw new EntityNotFoundException("Question", "Question is not found. id:" + questionId,  null);
-		}
-	}
-	
-	@Override
-	public QuestionResDto getQuestion(Long userId, Long questionId) {
-		QuestionResDto questionResDto = new QuestionResDto();
-		Question question = this.getQuestion(questionId);
-		List<Parameter> parameterList = this.getParameterList(questionId);
-		Answer answer = this.getAnswer(userId, questionId);
-		BeanUtils.copyProperties(question, questionResDto);
-		if (answer == null) {
-			String defaultCode = this.getDefaultCode(question, parameterList);
-			questionResDto.setCode(defaultCode);
-		} else {
-			questionResDto.setCode(answer.getCode());
-		}
-		
-		return questionResDto;
-	}
-	
-	private String getDefaultCode(Question question, List<Parameter> parameterList) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("public class Solution {\n");
-		sb.append("\tpublic").append(" ").append(question.getReturnType()).append(" ").append(question.getMethodName()).append(" ").append("(");
-		for (int i=0; i<parameterList.size(); i++ ){
-			sb.append(parameterList.get(i).getType()).append(" ").append(parameterList.get(i).getName());
-			if (i < parameterList.size()-1) sb.append(", ");
-		}
-		sb.append(") {").append("\n");
-		sb.append("\t\treturn null;\n");
-		sb.append("\t}\n}");
-		return sb.toString();
-	}
-	
-	@Override
-	public List<Question> getQuestionList() {
-		return questionRepository.findAll();
-	}
+	private final UserService userService;
+	private final QuestionService questionService;
 	
 	@Override
 	public Answer getAnswer(Long userId, Long questionId) {
-		return answerRepository.findByQuestionIdAndUserId(questionId, userId);
+		return answerRepository.findByUserIdAndQuestionId(userId, questionId);
 	}
 	
+	private Answer getAnswer(Long id) {
+		return answerRepository.findById(id).get();
+	}
+
 	@Override
 	public AnswerCheckResDto checkSubmitAnswer(Long userId, Long questionId) {
-		User user = this.getUser(userId);
-		Question question = this.getQuestion(questionId);
+		User user = userService.getUser(userId);
+		Question question = questionService.getQuestion(questionId);
 		return new AnswerCheckResDto(answerRepository.existsByUserIdAndQuestionId(user.getId(), question.getId()));
-	}
-	
-	@Override
-	public List<Parameter> getParameterList(Long questionId) {
-		return parameterRepository.findByQuestionId(questionId);
-	}
-	
-	@Override
-	public List<Verification> getVerificationList(Long id) {
-		return verificationRepository.findByQuestionId(id);
 	}
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
 	public AnswerResDto insertAnswer(Long userId, AnswerReqDto answerReqDto) {
 		
-		Question question = this.getQuestion(answerReqDto.getQuestionId());
+		Question question = questionService.getQuestion(answerReqDto.getQuestionId());
 		return this.getScoreCode(answerReqDto, userId, question);
 	}
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public AnswerSubmitResDto updateAnswer(Long userId, Long questionId) {
-		User user = this.getUser(userId);
-		Question question = this.getQuestion(questionId);
-		Answer answer = this.getAnswer(user.getId(), question.getId());
+	public AnswerSubmitResDto updateAnswer(Long userId, AnswerReqDto answerReqDto) {
+		AnswerResDto answerResDto = this.insertAnswer(userId, answerReqDto);
+		Answer answer = this.getAnswer(answerResDto.getAnswerId());
 		answer = this.submitAnswer(answer);
 		AnswerSubmitResDto resDto = new AnswerSubmitResDto();
 		BeanUtils.copyProperties(answer, resDto);
@@ -200,7 +108,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	public AnswerResDto getScoreCode(AnswerReqDto answerReqDto, Long userId, Question question) {
 
-		User user = this.getUser(userId);
+		User user = userService.getUser(userId);
 		String path = this.classPath + user.getId() + "/" + question.getId() + "" + "/" + System.currentTimeMillis() + "/";
 		
 		this.saveFile(answerReqDto.getCode(), path);
@@ -212,10 +120,10 @@ public class CodingTestServiceImpl implements CodingTestService {
 	private AnswerResDto verify(Question question, User user, String code, String path) {
 		String url = path + this.className + this.classExtension;
 		Answer answer = this.getAnswer(user.getId(), question.getId());
-		if (answer.isSubmitYn())
+		if (answer != null && answer.isSubmitYn())
 			throw new EntityNotModifyException("Answer", "Answer is already submitted. Answer:" + answer.getId(), null);
-		List<Verification> verificationList = this.getVerificationList(question.getId());
-		List<Parameter> parameters = this.getParameterList(question.getId());
+		List<Verification> verificationList = questionService.getVerificationList(question.getId());
+		List<Parameter> parameters = questionService.getParameterList(question.getId());
 		AnswerResDto answerResDto = new AnswerResDto();
 		for (Verification verification : verificationList) {
 			try {
@@ -226,7 +134,7 @@ public class CodingTestServiceImpl implements CodingTestService {
 				userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
 				
 				for (Parameter param : parameters) {
-					VerificationParam vp = verificationParamRepository.findByVerificationIdAndParameterId(verification.getId(), param.getId());
+					VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
 					paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
 				}
 				
