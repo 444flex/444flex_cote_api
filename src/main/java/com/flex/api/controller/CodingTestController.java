@@ -9,6 +9,9 @@ import javax.validation.Valid;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +28,7 @@ import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.QuestionResDto;
+import com.flex.api.exception.ClientRequestDataInvalidException;
 import com.flex.api.model.Question;
 import com.flex.api.model.User;
 import com.flex.api.service.impl.CodingTestServiceImpl;
@@ -108,8 +112,14 @@ public class CodingTestController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<AnswerResDto> submitAnswer(
 			@RequestHeader(value = "user_id", required = true) Long userId,
-			@Valid @RequestBody AnswerReqDto answerReqDto
+			@RequestBody @Valid AnswerReqDto answerReqDto, BindingResult bindingResult
 			) {
+		if (bindingResult.hasErrors()) {
+			StringBuilder sb = new StringBuilder();
+			for (ObjectError error : bindingResult.getAllErrors())
+				sb.append(error.getDefaultMessage()).append("\n");
+			throw new ClientRequestDataInvalidException(bindingResult.getAllErrors().get(0).getObjectName(), sb.toString(), null);
+		}
 		AnswerResDto answerResDto = service.submitAnswer(userId, answerReqDto);
 		return new ResponseEntity<AnswerResDto>(answerResDto, HttpStatus.OK);
 	}
