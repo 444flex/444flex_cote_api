@@ -57,6 +57,9 @@ public class Answer extends IdGenerationBaseEntity {
 	@Column(name = "code")
 	private String code;
 	
+	@Column(name = "submit_yn")
+	private boolean submitYn;
+	
 //	@Column(name = "answer_history_id")
 //	@NotNull
 //	private Long answerHistoryId;

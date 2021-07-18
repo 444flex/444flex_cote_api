@@ -15,6 +15,9 @@ public class AnswerResDto {
 		this.testCaseList = new ArrayList<AnswerResDto.TestCase>();
 	}
 	
+	@JsonProperty("answer_id")
+	private Long answerId;
+	
 	@JsonProperty("score")
 	private Integer Score;
 	

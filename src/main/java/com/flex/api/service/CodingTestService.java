@@ -6,6 +6,7 @@ import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
+import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.dto.response.QuestionResDto;
 import com.flex.api.model.Answer;
 import com.flex.api.model.Parameter;
@@ -33,6 +34,8 @@ public interface CodingTestService {
 	
 	public List<Verification> getVerificationList(Long id); 
 	
-	public AnswerResDto submitAnswer(Long userId, AnswerReqDto answerReqDto);
+	public AnswerResDto insertAnswer(Long userId, AnswerReqDto answerReqDto);
+	
+	public AnswerSubmitResDto updateAnswer(Long userId, Long questionId);
 	
 }

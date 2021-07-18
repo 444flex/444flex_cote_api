@@ -25,6 +25,7 @@ public class ServiceException extends RuntimeException {
 		
 		EntityNotFound,
 		EntityDuplicated,
+		EntityNotModify,
 		
 		InternalServerError,
 		FileCreateFailed,

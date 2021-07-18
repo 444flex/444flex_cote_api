@@ -26,11 +26,13 @@ import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
+import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.dto.response.AnswerResDto.TestCase;
 import com.flex.api.dto.response.QuestionResDto;
 import com.flex.api.exception.CompileErrorException;
 import com.flex.api.exception.DirectoryCreateFailedException;
 import com.flex.api.exception.EntityNotFoundException;
+import com.flex.api.exception.EntityNotModifyException;
 import com.flex.api.exception.FileCreateFailedException;
 import com.flex.api.model.Answer;
 import com.flex.api.model.AnswerHistory;
@@ -173,10 +175,27 @@ public class CodingTestServiceImpl implements CodingTestService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public AnswerResDto submitAnswer(Long userId, AnswerReqDto answerReqDto) {
+	public AnswerResDto insertAnswer(Long userId, AnswerReqDto answerReqDto) {
 		
 		Question question = this.getQuestion(answerReqDto.getQuestionId());
 		return this.getScoreCode(answerReqDto, userId, question);
+	}
+	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+	public AnswerSubmitResDto updateAnswer(Long userId, Long questionId) {
+		User user = this.getUser(userId);
+		Question question = this.getQuestion(questionId);
+		Answer answer = this.getAnswer(user.getId(), question.getId());
+		answer = this.submitAnswer(answer);
+		AnswerSubmitResDto resDto = new AnswerSubmitResDto();
+		BeanUtils.copyProperties(answer, resDto);
+		return resDto;
+	}
+	
+	public Answer submitAnswer(Answer answer) {
+		answer.setSubmitYn(true);
+		return answerRepository.save(answer);
 	}
 	
 	public AnswerResDto getScoreCode(AnswerReqDto answerReqDto, Long userId, Question question) {
@@ -193,6 +212,8 @@ public class CodingTestServiceImpl implements CodingTestService {
 	private AnswerResDto verify(Question question, User user, String code, String path) {
 		String url = path + this.className + this.classExtension;
 		Answer answer = this.getAnswer(user.getId(), question.getId());
+		if (answer.isSubmitYn())
+			throw new EntityNotModifyException("Answer", "Answer is already submitted. Answer:" + answer.getId(), null);
 		List<Verification> verificationList = this.getVerificationList(question.getId());
 		List<Parameter> parameters = this.getParameterList(question.getId());
 		AnswerResDto answerResDto = new AnswerResDto();
@@ -263,6 +284,8 @@ public class CodingTestServiceImpl implements CodingTestService {
 		
 		if (answer != null ) answerRepository.save(answer);
 		answerHistoryRepository.save(answerHis);
+		
+		answerResDto.setAnswerId(answer.getId());
 		
 		return answerResDto;
 	}
