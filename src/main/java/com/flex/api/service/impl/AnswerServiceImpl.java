@@ -48,6 +48,7 @@ import com.flex.api.strategy.StringStrategy;
 import com.flex.api.util.CmdUtil;
 import com.flex.api.util.FileUtil;
 import com.flex.api.util.ReflectionUtil;
+import com.flex.api.util.SlackUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -116,6 +117,7 @@ public class AnswerServiceImpl implements AnswerService {
 		answer = this.submitAnswer(answer);
 		AnswerSubmitResDto resDto = new AnswerSubmitResDto();
 		BeanUtils.copyProperties(answer, resDto);
+		this.sendMessageToSlack(userId, answer);
 		return resDto;
 	}
 	
@@ -125,6 +127,14 @@ public class AnswerServiceImpl implements AnswerService {
 		Answer answer = this.getAnswer(userId, questionId);
 //		answer.setSubmitYn(false);
 		answerRepository.delete(answer);
+	}
+	
+	private void sendMessageToSlack(Long userId, Answer answer) {
+		User user = userService.getUser(userId);
+		StringBuilder sb = new StringBuilder();
+		sb.append(user.getName()).append("님이 답안을 제출하셨습니다.");
+		sb.append(" score : ").append(answer.getScore());
+		SlackUtil.sendMessage(sb.toString());
 	}
 	
 	public Answer submitAnswer(Answer answer) {
@@ -250,7 +260,7 @@ public class AnswerServiceImpl implements AnswerService {
 				}
 				
 			} catch (Exception e) {
-				throw new RuntimeException("ClassNotFoundException");
+				throw new RuntimeException("ClassNotFoundException", e);
 			}
 		}
 		
