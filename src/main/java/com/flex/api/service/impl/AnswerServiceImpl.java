@@ -77,6 +77,8 @@ public class AnswerServiceImpl implements AnswerService {
 	private final UserService userService;
 	private final QuestionService questionService;
 	
+	private final SlackUtil slackUtil;
+	
 	@Override
 	public Answer getAnswer(Long userId, Long questionId) {
 		return answerRepository.findByUserIdAndQuestionId(userId, questionId);
@@ -134,7 +136,7 @@ public class AnswerServiceImpl implements AnswerService {
 		StringBuilder sb = new StringBuilder();
 		sb.append(user.getName()).append("님이 답안을 제출하셨습니다.");
 		sb.append(" score : ").append(answer.getScore());
-		SlackUtil.sendMessage(sb.toString());
+		slackUtil.sendMessage(sb.toString());
 	}
 	
 	public Answer submitAnswer(Answer answer) {
