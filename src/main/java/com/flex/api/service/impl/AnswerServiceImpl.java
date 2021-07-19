@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +40,7 @@ import com.flex.api.service.AnswerService;
 import com.flex.api.service.QuestionService;
 import com.flex.api.service.UserService;
 import com.flex.api.strategy.IntegerArrayStrategy;
+import com.flex.api.strategy.IntegerMultiArrayStrategy;
 import com.flex.api.strategy.IntegerStrategy;
 import com.flex.api.strategy.ObjectStrategy;
 import com.flex.api.strategy.StringArrayStrategy;
@@ -147,12 +151,72 @@ public class AnswerServiceImpl implements AnswerService {
 		List<Verification> verificationList = questionService.getVerificationList(question.getId());
 		List<Parameter> parameters = questionService.getParameterList(question.getId());
 		AnswerResDto answerResDto = new AnswerResDto();
+		String classNameDummy = this.className;
+		String methodNameDummy = this.methodName;
 		for (Verification verification : verificationList) {
 			try {
-//				ExecutorService executor = Executors.newSingleThreadExecutor();
-//				Callable task = new Callable() {
-//					
-//				};
+				/*
+				ExecutorService executor = Executors.newSingleThreadExecutor();
+				Callable task = new Callable() {
+					
+					public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
+						ObjectStrategy object = null;
+						if (type2.equals(Parameter.Type2.single.name())) {
+							if (type.equals("int") || type.equals("Integer")) {
+								object = new IntegerStrategy();
+							} else if (type.equals("String")) {
+								object = new StringStrategy();
+							}
+						} else {
+							if (type.equals("int[]")) {
+								object = new IntegerArrayStrategy();
+							} else if (type.equals("String[]")) {
+								object = new StringArrayStrategy();
+							}
+						}
+						return object.getTypeAndValue(value);
+					}
+					
+					public Object call() throws Exception {
+						Object correctAnswer = null;
+						Object userAnswer = null;
+						List<Object> paramList = new ArrayList<Object>();
+						correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+						userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+						
+						for (Parameter param : parameters) {
+							VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
+							paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
+						}
+						
+						Class<?>[] classes = ReflectionUtil.listToArray(paramList);
+						ReflectionUtil reflection = new ReflectionUtil.Builder()
+								.fileDir(path)
+								.fileName(classNameDummy)
+								.methodName(methodNameDummy)
+								.classes(classes)
+								.build();
+						
+						long s = System.currentTimeMillis();
+						userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
+						long e = System.currentTimeMillis();
+						
+						if (Objects.deepEquals(correctAnswer, userAnswer)) {
+							System.out.println("true");
+							answerResDto.setTestCase(true, e-s);
+						} else {
+							System.out.println("false");
+							answerResDto.setTestCase(false, e-s);
+						}
+						Thread.sleep(400);
+						
+						return true;
+					}
+				};
+				
+				Future future = executor.submit(task);
+				future.get(300, TimeUnit.MILLISECONDS);
+				*/
 				
 				Object correctAnswer = null;
 				Object userAnswer = null;
@@ -184,7 +248,8 @@ public class AnswerServiceImpl implements AnswerService {
 					System.out.println("false");
 					answerResDto.setTestCase(false, e-s);
 				}
-			} catch (ClassNotFoundException e) {
+				
+			} catch (Exception e) {
 				throw new RuntimeException("ClassNotFoundException");
 			}
 		}
@@ -258,6 +323,8 @@ public class AnswerServiceImpl implements AnswerService {
 				object = new IntegerArrayStrategy();
 			} else if (type.equals("String[]")) {
 				object = new StringArrayStrategy();
+			} else if (type.equals("int[][]")) {
+				object = new IntegerMultiArrayStrategy();
 			}
 		}
 		return object.getTypeAndValue(value);
