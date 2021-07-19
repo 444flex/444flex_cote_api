@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,7 @@ import com.flex.api.exception.DirectoryCreateFailedException;
 import com.flex.api.exception.EntityNotFoundException;
 import com.flex.api.exception.EntityNotModifyException;
 import com.flex.api.exception.FileCreateFailedException;
+import com.flex.api.exception.RuntimeTimeoutException;
 import com.flex.api.model.Answer;
 import com.flex.api.model.AnswerHistory;
 import com.flex.api.model.Parameter;
@@ -166,70 +168,107 @@ public class AnswerServiceImpl implements AnswerService {
 		String classNameDummy = this.className;
 		String methodNameDummy = this.methodName;
 		for (Verification verification : verificationList) {
+//			try {
+//				ExecutorService executor = Executors.newSingleThreadExecutor();
+//				Callable task = new Callable() {
+//					
+//					public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
+//						ObjectStrategy object = null;
+//						if (type2.equals(Parameter.Type2.single.name())) {
+//							if (type.equals("int") || type.equals("Integer")) {
+//								object = new IntegerStrategy();
+//							} else if (type.equals("String")) {
+//								object = new StringStrategy();
+//							}
+//						} else {
+//							if (type.equals("int[]")) {
+//								object = new IntegerArrayStrategy();
+//							} else if (type.equals("String[]")) {
+//								object = new StringArrayStrategy();
+//							} else if (type.equals("int[][]")) {
+//								object = new IntegerMultiArrayStrategy();
+//							}
+//						}
+//						return object.getTypeAndValue(value);
+//					}
+//					
+//					public Object call() throws Exception {
+//						Object correctAnswer = null;
+//						Object userAnswer = null;
+//						List<Object> paramList = new ArrayList<Object>();
+//						correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+//						userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+//						
+//						for (Parameter param : parameters) {
+//							VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
+//							paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
+//						}
+//						
+//						Class<?>[] classes = ReflectionUtil.listToArray(paramList);
+//						ReflectionUtil reflection = new ReflectionUtil.Builder()
+//								.fileDir(path)
+//								.fileName(classNameDummy)
+//								.methodName(methodNameDummy)
+//								.classes(classes)
+//								.build();
+//						
+//						long s = System.currentTimeMillis();
+//						userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
+//						long e = System.currentTimeMillis();
+////						Thread.sleep(1000);
+//						if (Objects.deepEquals(correctAnswer, userAnswer)) {
+//							System.out.println("true");
+//							answerResDto.setTestCase(true, e-s);
+//						} else {
+//							System.out.println("false");
+//							answerResDto.setTestCase(false, e-s);
+//						}
+//						return true;
+//					}
+//				};
+//				
+//				Future future = executor.submit(task);
+//				Object obj = future.get(question.getLimitTime(), TimeUnit.MILLISECONDS);
+//				
+//				System.out.println("1211211221");
+////				Object correctAnswer = null;
+////				Object userAnswer = null;
+////				List<Object> paramList = new ArrayList<Object>();
+////				correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+////				userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+////				
+////				for (Parameter param : parameters) {
+////					VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
+////					paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
+////				}
+////				
+////				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
+////				ReflectionUtil reflection = new ReflectionUtil.Builder()
+////						.fileDir(path)
+////						.fileName(this.className)
+////						.methodName(this.methodName)
+////						.classes(classes)
+////						.build();
+////				
+////				long s = System.currentTimeMillis();
+////				userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
+////				long e = System.currentTimeMillis();
+////				
+////				if (Objects.deepEquals(correctAnswer, userAnswer)) {
+////					System.out.println("true");
+////					answerResDto.setTestCase(true, e-s);
+////				} else {
+////					System.out.println("false");
+////					answerResDto.setTestCase(false, e-s);
+////				}
+//				
+//			} catch (TimeoutException e) {
+//				System.out.println("timeout");
+////				throw new RuntimeTimeoutException("RuntimeError", "Runtime timeout", null);
+//			} catch (Exception e) {
+////				throw new RuntimeException("ClassNotFoundException", e);
+//			}
 			try {
-				/*
-				ExecutorService executor = Executors.newSingleThreadExecutor();
-				Callable task = new Callable() {
-					
-					public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
-						ObjectStrategy object = null;
-						if (type2.equals(Parameter.Type2.single.name())) {
-							if (type.equals("int") || type.equals("Integer")) {
-								object = new IntegerStrategy();
-							} else if (type.equals("String")) {
-								object = new StringStrategy();
-							}
-						} else {
-							if (type.equals("int[]")) {
-								object = new IntegerArrayStrategy();
-							} else if (type.equals("String[]")) {
-								object = new StringArrayStrategy();
-							}
-						}
-						return object.getTypeAndValue(value);
-					}
-					
-					public Object call() throws Exception {
-						Object correctAnswer = null;
-						Object userAnswer = null;
-						List<Object> paramList = new ArrayList<Object>();
-						correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-						userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-						
-						for (Parameter param : parameters) {
-							VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
-							paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
-						}
-						
-						Class<?>[] classes = ReflectionUtil.listToArray(paramList);
-						ReflectionUtil reflection = new ReflectionUtil.Builder()
-								.fileDir(path)
-								.fileName(classNameDummy)
-								.methodName(methodNameDummy)
-								.classes(classes)
-								.build();
-						
-						long s = System.currentTimeMillis();
-						userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
-						long e = System.currentTimeMillis();
-						
-						if (Objects.deepEquals(correctAnswer, userAnswer)) {
-							System.out.println("true");
-							answerResDto.setTestCase(true, e-s);
-						} else {
-							System.out.println("false");
-							answerResDto.setTestCase(false, e-s);
-						}
-						Thread.sleep(400);
-						
-						return true;
-					}
-				};
-				
-				Future future = executor.submit(task);
-				future.get(300, TimeUnit.MILLISECONDS);
-				*/
-				
 				Object correctAnswer = null;
 				Object userAnswer = null;
 				List<Object> paramList = new ArrayList<Object>();
@@ -244,26 +283,15 @@ public class AnswerServiceImpl implements AnswerService {
 				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
 				ReflectionUtil reflection = new ReflectionUtil.Builder()
 						.fileDir(path)
-						.fileName(this.className)
-						.methodName(this.methodName)
+						.fileName(classNameDummy)
+						.methodName(methodNameDummy)
 						.classes(classes)
 						.build();
+				answerResDto.getTestCaseList().add(runTestCase(question, userAnswer, correctAnswer, reflection, paramList));
+			} catch (ClassNotFoundException e) {
 				
-				long s = System.currentTimeMillis();
-				userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
-				long e = System.currentTimeMillis();
-				
-				if (Objects.deepEquals(correctAnswer, userAnswer)) {
-					System.out.println("true");
-					answerResDto.setTestCase(true, e-s);
-				} else {
-					System.out.println("false");
-					answerResDto.setTestCase(false, e-s);
-				}
-				
-			} catch (Exception e) {
-				throw new RuntimeException("ClassNotFoundException", e);
 			}
+			
 		}
 		
 		int score = 0;
@@ -300,6 +328,78 @@ public class AnswerServiceImpl implements AnswerService {
 		answerResDto.setAnswerId(answer.getId());
 		
 		return answerResDto;
+	}
+	
+	private AnswerResDto.TestCase runTestCase(Question question, Object userAnswer, Object correctAnswer, ReflectionUtil reflection, List<Object> paramList) {
+		try {
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Callable task = new Callable() {
+				
+//				public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
+//					ObjectStrategy object = null;
+//					if (type2.equals(Parameter.Type2.single.name())) {
+//						if (type.equals("int") || type.equals("Integer")) {
+//							object = new IntegerStrategy();
+//						} else if (type.equals("String")) {
+//							object = new StringStrategy();
+//						}
+//					} else {
+//						if (type.equals("int[]")) {
+//							object = new IntegerArrayStrategy();
+//						} else if (type.equals("String[]")) {
+//							object = new StringArrayStrategy();
+//						} else if (type.equals("int[][]")) {
+//							object = new IntegerMultiArrayStrategy();
+//						}
+//					}
+//					return object.getTypeAndValue(value);
+//				}
+				
+				public AnswerResDto.TestCase call() throws Exception {
+//					Object correctAnswer = null;
+//					Object userAnswer = null;
+//					List<Object> paramList = new ArrayList<Object>();
+//					correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+//					userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+//					
+//					for (Parameter param : parameters) {
+//						VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
+//						paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
+//					}
+//					
+//					Class<?>[] classes = ReflectionUtil.listToArray(paramList);
+//					ReflectionUtil reflection = new ReflectionUtil.Builder()
+//							.fileDir(path)
+//							.fileName(classNameDummy)
+//							.methodName(methodNameDummy)
+//							.classes(classes)
+//							.build();
+					long s = System.currentTimeMillis();
+					Object userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
+					long e = System.currentTimeMillis();
+//					Thread.sleep(1000);
+					if (Objects.deepEquals(correctAnswer, userAnswer)) {
+//						System.out.println("true");
+//						answerResDto.setTestCase(true, e-s);
+						return new AnswerResDto.TestCase(true, e-s);
+					} else {
+//						System.out.println("false");
+//						answerResDto.setTestCase(false, e-s);
+						return new AnswerResDto.TestCase(false, e-s);
+					}
+				}
+			};
+			
+			Future future = executor.submit(task);
+			Object obj = future.get(question.getLimitTime(), TimeUnit.MILLISECONDS);
+			return (TestCase) obj;
+		} catch (TimeoutException e) {
+			System.out.println("timeout");
+			return new AnswerResDto.TestCase(false, question.getLimitTime().longValue());
+//			throw new RuntimeTimeoutException("RuntimeError", "Runtime timeout", null);
+		} catch (Exception e) {
+			throw new RuntimeException("ClassNotFoundException", e);
+		}
 	}
 	
 	private void compileCode(String path) {
