@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -154,7 +155,7 @@ public class AnswerServiceImpl implements AnswerService {
 		this.saveFile(answerReqDto.getCode(), path);
 		this.compileCode(path);
 
-		return this.verify(question, user, answerReqDto.getCode(), path);
+		return this.verify2(question, user, answerReqDto.getCode(), path);
 	}
 	
 	private AnswerResDto verify(Question question, User user, String code, String path) {
@@ -332,7 +333,8 @@ public class AnswerServiceImpl implements AnswerService {
 	
 	private AnswerResDto.TestCase runTestCase(Question question, Object userAnswer, Object correctAnswer, ReflectionUtil reflection, List<Object> paramList) {
 		try {
-			ExecutorService executor = Executors.newSingleThreadExecutor();
+//			ExecutorService executor = Executors.newSingleThreadExecutor();
+			ExecutorService executor = Executors.newFixedThreadPool(10);
 			Callable task = new Callable() {
 				
 //				public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
@@ -440,5 +442,110 @@ public class AnswerServiceImpl implements AnswerService {
 			}
 		}
 		return object.getTypeAndValue(value);
+	}
+	
+	private AnswerResDto verify2(Question question, User user, String code, String path) {
+		String url = path + this.className + this.classExtension;
+		Answer answer = this.getAnswer(user.getId(), question.getId());
+		if (answer != null && answer.isSubmitYn())
+			throw new EntityNotModifyException("Answer", "Answer is already submitted. Answer:" + answer.getId(), null);
+		List<Verification> verificationList = questionService.getVerificationList(question.getId());
+		List<Parameter> parameters = questionService.getParameterList(question.getId());
+		AnswerResDto answerResDto = new AnswerResDto();
+		
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+		
+		for (Verification verification : verificationList) {
+			try {
+				
+				List<Object> paramList = new ArrayList<Object>();
+				final Object correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
+				
+				for (Parameter param : parameters) {
+					VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
+					paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
+				}
+				
+				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
+				ReflectionUtil reflection = new ReflectionUtil.Builder()
+						.fileDir(path)
+						.fileName(this.className)
+						.methodName(this.methodName)
+						.classes(classes)
+						.build();
+				executor.execute(() -> {
+					System.out.println("thread start");
+					int index = 0;
+					synchronized (answerResDto) {
+						answerResDto.setTestCase(false, 0L);
+						index = answerResDto.getTestCaseList().size() - 1;
+					}
+					
+					long s = System.currentTimeMillis();
+					Object userAnswer2 = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
+					long e = System.currentTimeMillis();
+					if (Objects.deepEquals(correctAnswer, userAnswer2)) {
+						System.out.println("true");
+						synchronized (answerResDto) {
+							answerResDto.getTestCaseList().get(index).setCompileYn(true);
+							answerResDto.getTestCaseList().get(index).setCompileTime(e-s);
+						}
+					} else {
+						System.out.println("false");
+					}
+				});
+				
+				
+			} catch (Exception e) {
+				throw new RuntimeException("ClassNotFoundException", e);
+			}
+		}
+		executor.shutdown();
+		try {
+			if (executor.awaitTermination(question.getLimitTime(), TimeUnit.MILLISECONDS)) {
+				System.out.println("all done");
+			} else {
+				System.out.println("timeout");
+				executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		int score = 0;
+		
+		for (TestCase testCase : answerResDto.getTestCaseList()) {
+			if (testCase.isCompileYn()) score++;
+		}
+		
+		score = score * 100 / answerResDto.getTestCaseList().size();
+		answerResDto.setScore(score);
+		
+		if (answer == null) {
+			answer = new Answer();
+			answer.setScore(score);
+			answer.setFileName(url);
+			answer.setCode(code);
+			answer.setQuestion(question);
+			answer.setSubmitCount(0);
+			answer.setUser(user);
+		} else if (answer.getScore() <= score) {
+			answer.setScore(score);
+			answer.setFileName(url);
+			answer.setCode(code);
+		}
+		
+		answer.addSubmitCount();
+		
+		AnswerHistory answerHis = new AnswerHistory();
+		answerHis.setAnswerHistory(answer, score, url, code);
+		
+		if (answer != null ) answerRepository.save(answer);
+		answerHistoryRepository.save(answerHis);
+		
+		answerResDto.setAnswerId(answer.getId());
+		
+		return answerResDto;
 	}
 }

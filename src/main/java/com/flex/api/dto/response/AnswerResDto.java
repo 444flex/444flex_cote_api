@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class AnswerResDto {
@@ -26,6 +27,7 @@ public class AnswerResDto {
 	
 	@Data
 	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class TestCase {
 		private boolean compileYn;
 		
