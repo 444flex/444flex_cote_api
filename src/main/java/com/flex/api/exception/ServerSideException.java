@@ -19,5 +19,9 @@ public class ServerSideException extends ServiceException {
 	public ServerSideException(HttpStatus responseCode, ErrorType errorType, ErrorReason errorReason, int errorCode, String errorTarget, String errorMessage, Throwable cause) {
 		super(responseCode, errorType, errorReason, errorCode, errorTarget, errorMessage, cause);
 	}
+	
+	public ServerSideException(String errorTarget, String errorMessage, Throwable cause) {
+		super(RESPONSE_CODE, DEFAULT_ERROR_TYPE, DEFAULT_ERROR_REASON, DEFAULT_ERROR_CODE, errorTarget, errorMessage, cause);
+	}
 
 }

@@ -33,18 +33,17 @@ dependencies {
 //	testImplementation 'org.springframework.security:spring-security-test'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	
-	// https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
 //	implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '2.0.2'
 	implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.0.Final'
 	
-	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 	implementation 'commons-httpclient:commons-httpclient:3.1'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+	
 	
 }
 
