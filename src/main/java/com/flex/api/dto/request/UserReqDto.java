@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class UserReqDto {
 	
+	@JsonProperty("email")
+	private String email;
+	
 	@JsonProperty("name")
 	private String name;
 	

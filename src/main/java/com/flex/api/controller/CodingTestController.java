@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
-import com.flex.api.dto.response.AnswerCheckResDto;
 import com.flex.api.dto.response.AnswerResDto;
 import com.flex.api.dto.response.AnswerSubmitResDto;
 import com.flex.api.dto.response.QuestionResDto;
@@ -54,6 +53,7 @@ public class CodingTestController {
 	private final QuestionService questionService;
 	private final AnswerService answerService;
 	
+	
 	@ApiOperation(value = "로그인", notes = "로그인")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "조회 성공"),
@@ -64,6 +64,7 @@ public class CodingTestController {
 			@ApiResponse(code = 500, message = "시스템 장애") })
 	@PostMapping("/user")
 	@ResponseStatus(value = HttpStatus.OK)
+	@Deprecated
 	public ResponseEntity<User> login(
 			@RequestBody UserReqDto userReqDto
 			) {

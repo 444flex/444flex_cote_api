@@ -52,6 +52,10 @@ flex:
     error:
       webhook: https://hooks.slack.com/services/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
       channel: error_alert
+  auth:
+    token:
+      ttl: 7200
+      secretkey: testsecretkey
 
 ---
 
@@ -109,6 +113,10 @@ flex:
     error:
       webhook: https://hooks.slack.com/services/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
       channel: error_alert
+  auth:
+    token:
+      ttl: 7200
+      secretkey: testsecretkey
 
 ---
 # DataSource
@@ -166,6 +174,10 @@ flex:
     error:
       webhook: https://hooks.slack.com/services/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
       channel: error_alert
+  auth:
+    token:
+      ttl: 7200
+      secretkey: testsecretkey
 
 ---
 
@@ -226,3 +238,7 @@ flex:
     error:
       webhook: https://hooks.slack.com/services/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
       channel: error_alert
+  auth:
+    token:
+      ttl: 7200
+      secretkey: testsecretkey

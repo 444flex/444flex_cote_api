@@ -1,12 +1,10 @@
 package com.flex.api.dto.response;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Data;
+import lombok.Builder;
 
-@Data
+@Builder
 public class UserResDto {
 	
 	@JsonProperty("user_id")
@@ -15,9 +13,8 @@ public class UserResDto {
 	@JsonProperty("token")
 	private String token;
 	
-	@JsonProperty("iat")
-	private Date iat;
+	@JsonProperty("expires_in")
+	private Long expiresIn;
 	
-	@JsonProperty("exp")
-	private Date exp;
+	
 }
