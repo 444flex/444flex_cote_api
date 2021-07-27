@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.flex.api.exception.ServerSideException;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -42,34 +43,11 @@ public class JwtUtils {
 		}
 	}
 	
-	public static Map<String, Object> getTokenClaims(String authToken, String secretKey) {
-		Map<String, Object> claimMap = null;
-		
-		try {
-			return Jwts.parser()
-					.setSigningKey(secretKey.getBytes("UTF-8"))
-					.parseClaimsJws(authToken)
-					.getBody();
-		} catch (ExpiredJwtException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedJwtException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedJwtException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SignatureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return claimMap;
+	public static Claims getTokenClaims(String authToken, String secretKey) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException, UnsupportedEncodingException {
+		return Jwts.parser()
+				.setSigningKey(secretKey.getBytes("UTF-8"))
+				.parseClaimsJws(authToken)
+				.getBody();
 	}
 
 }

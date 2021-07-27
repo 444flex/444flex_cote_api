@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.flex.api.annotation.RequiredToken;
 import com.flex.api.dto.request.AnswerReqDto;
 import com.flex.api.dto.request.UserReqDto;
 import com.flex.api.dto.response.AnswerResDto;
@@ -72,6 +73,7 @@ public class CodingTestController {
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 	
+	@RequiredToken
 	@ApiOperation(value = "문제 목록 조회", notes = "문제 목록 조회")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "조회 성공"),
