@@ -151,300 +151,14 @@ public class AnswerServiceImpl implements AnswerService {
 
 		User user = userService.getUser(userId);
 		String path = this.classPath + user.getId() + "/" + question.getId() + "" + "/" + System.currentTimeMillis() + "/";
-		
-		this.saveFile(answerReqDto.getCode(), path);
-		this.compileCode(path);
+		String file = this.className + this.classExtension;
+		FileUtil.saveFile(path, file, answerReqDto.getCode());
+		CmdUtil.compile(path, this.className);
 
-		return this.verify2(question, user, answerReqDto.getCode(), path);
+		return this.verify(question, user, answerReqDto.getCode(), path);
 	}
 	
 	private AnswerResDto verify(Question question, User user, String code, String path) {
-		String url = path + this.className + this.classExtension;
-		Answer answer = this.getAnswer(user.getId(), question.getId());
-		if (answer != null && answer.isSubmitYn())
-			throw new EntityNotModifyException("Answer", "Answer is already submitted. Answer:" + answer.getId(), null);
-		List<Verification> verificationList = questionService.getVerificationList(question.getId());
-		List<Parameter> parameters = questionService.getParameterList(question.getId());
-		AnswerResDto answerResDto = new AnswerResDto();
-		String classNameDummy = this.className;
-		String methodNameDummy = this.methodName;
-		for (Verification verification : verificationList) {
-//			try {
-//				ExecutorService executor = Executors.newSingleThreadExecutor();
-//				Callable task = new Callable() {
-//					
-//					public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
-//						ObjectStrategy object = null;
-//						if (type2.equals(Parameter.Type2.single.name())) {
-//							if (type.equals("int") || type.equals("Integer")) {
-//								object = new IntegerStrategy();
-//							} else if (type.equals("String")) {
-//								object = new StringStrategy();
-//							}
-//						} else {
-//							if (type.equals("int[]")) {
-//								object = new IntegerArrayStrategy();
-//							} else if (type.equals("String[]")) {
-//								object = new StringArrayStrategy();
-//							} else if (type.equals("int[][]")) {
-//								object = new IntegerMultiArrayStrategy();
-//							}
-//						}
-//						return object.getTypeAndValue(value);
-//					}
-//					
-//					public Object call() throws Exception {
-//						Object correctAnswer = null;
-//						Object userAnswer = null;
-//						List<Object> paramList = new ArrayList<Object>();
-//						correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-//						userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-//						
-//						for (Parameter param : parameters) {
-//							VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
-//							paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
-//						}
-//						
-//						Class<?>[] classes = ReflectionUtil.listToArray(paramList);
-//						ReflectionUtil reflection = new ReflectionUtil.Builder()
-//								.fileDir(path)
-//								.fileName(classNameDummy)
-//								.methodName(methodNameDummy)
-//								.classes(classes)
-//								.build();
-//						
-//						long s = System.currentTimeMillis();
-//						userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
-//						long e = System.currentTimeMillis();
-////						Thread.sleep(1000);
-//						if (Objects.deepEquals(correctAnswer, userAnswer)) {
-//							System.out.println("true");
-//							answerResDto.setTestCase(true, e-s);
-//						} else {
-//							System.out.println("false");
-//							answerResDto.setTestCase(false, e-s);
-//						}
-//						return true;
-//					}
-//				};
-//				
-//				Future future = executor.submit(task);
-//				Object obj = future.get(question.getLimitTime(), TimeUnit.MILLISECONDS);
-//				
-//				System.out.println("1211211221");
-////				Object correctAnswer = null;
-////				Object userAnswer = null;
-////				List<Object> paramList = new ArrayList<Object>();
-////				correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-////				userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-////				
-////				for (Parameter param : parameters) {
-////					VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
-////					paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
-////				}
-////				
-////				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
-////				ReflectionUtil reflection = new ReflectionUtil.Builder()
-////						.fileDir(path)
-////						.fileName(this.className)
-////						.methodName(this.methodName)
-////						.classes(classes)
-////						.build();
-////				
-////				long s = System.currentTimeMillis();
-////				userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
-////				long e = System.currentTimeMillis();
-////				
-////				if (Objects.deepEquals(correctAnswer, userAnswer)) {
-////					System.out.println("true");
-////					answerResDto.setTestCase(true, e-s);
-////				} else {
-////					System.out.println("false");
-////					answerResDto.setTestCase(false, e-s);
-////				}
-//				
-//			} catch (TimeoutException e) {
-//				System.out.println("timeout");
-////				throw new RuntimeTimeoutException("RuntimeError", "Runtime timeout", null);
-//			} catch (Exception e) {
-////				throw new RuntimeException("ClassNotFoundException", e);
-//			}
-			try {
-				Object correctAnswer = null;
-				Object userAnswer = null;
-				List<Object> paramList = new ArrayList<Object>();
-				correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-				userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-				
-				for (Parameter param : parameters) {
-					VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
-					paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
-				}
-				
-				Class<?>[] classes = ReflectionUtil.listToArray(paramList);
-				ReflectionUtil reflection = new ReflectionUtil.Builder()
-						.fileDir(path)
-						.fileName(classNameDummy)
-						.methodName(methodNameDummy)
-						.classes(classes)
-						.build();
-				answerResDto.getTestCaseList().add(runTestCase(question, userAnswer, correctAnswer, reflection, paramList));
-			} catch (ClassNotFoundException e) {
-				
-			}
-			
-		}
-		
-		int score = 0;
-		
-		for (TestCase testCase : answerResDto.getTestCaseList()) {
-			if (testCase.isCompileYn()) score++;
-		}
-		
-		score = score * 100 / answerResDto.getTestCaseList().size();
-		answerResDto.setScore(score);
-		
-		if (answer == null) {
-			answer = new Answer();
-			answer.setScore(score);
-			answer.setFileName(url);
-			answer.setCode(code);
-			answer.setQuestion(question);
-			answer.setSubmitCount(0);
-			answer.setUser(user);
-		} else if (answer.getScore() <= score) {
-			answer.setScore(score);
-			answer.setFileName(url);
-			answer.setCode(code);
-		}
-		
-		answer.addSubmitCount();
-		
-		AnswerHistory answerHis = new AnswerHistory();
-		answerHis.setAnswerHistory(answer, score, url, code);
-		
-		if (answer != null ) answerRepository.save(answer);
-		answerHistoryRepository.save(answerHis);
-		
-		answerResDto.setAnswerId(answer.getId());
-		
-		return answerResDto;
-	}
-	
-	private AnswerResDto.TestCase runTestCase(Question question, Object userAnswer, Object correctAnswer, ReflectionUtil reflection, List<Object> paramList) {
-		try {
-//			ExecutorService executor = Executors.newSingleThreadExecutor();
-			ExecutorService executor = Executors.newFixedThreadPool(10);
-			Callable task = new Callable() {
-				
-//				public Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
-//					ObjectStrategy object = null;
-//					if (type2.equals(Parameter.Type2.single.name())) {
-//						if (type.equals("int") || type.equals("Integer")) {
-//							object = new IntegerStrategy();
-//						} else if (type.equals("String")) {
-//							object = new StringStrategy();
-//						}
-//					} else {
-//						if (type.equals("int[]")) {
-//							object = new IntegerArrayStrategy();
-//						} else if (type.equals("String[]")) {
-//							object = new StringArrayStrategy();
-//						} else if (type.equals("int[][]")) {
-//							object = new IntegerMultiArrayStrategy();
-//						}
-//					}
-//					return object.getTypeAndValue(value);
-//				}
-				
-				public AnswerResDto.TestCase call() throws Exception {
-//					Object correctAnswer = null;
-//					Object userAnswer = null;
-//					List<Object> paramList = new ArrayList<Object>();
-//					correctAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-//					userAnswer = this.setObjectStrategy(question.getReturnType(), verification.getCorrectAnswer(), question.getReturnType2().name());
-//					
-//					for (Parameter param : parameters) {
-//						VerificationParam vp = questionService.getVerificationParam(verification.getId(), param.getId());
-//						paramList.add(this.setObjectStrategy(param.getType(), vp.getValue(), param.getType2().name()));
-//					}
-//					
-//					Class<?>[] classes = ReflectionUtil.listToArray(paramList);
-//					ReflectionUtil reflection = new ReflectionUtil.Builder()
-//							.fileDir(path)
-//							.fileName(classNameDummy)
-//							.methodName(methodNameDummy)
-//							.classes(classes)
-//							.build();
-					long s = System.currentTimeMillis();
-					Object userAnswer = reflection.execMethod(paramList.toArray(new Object[paramList.size()]));
-					long e = System.currentTimeMillis();
-//					Thread.sleep(1000);
-					if (Objects.deepEquals(correctAnswer, userAnswer)) {
-//						System.out.println("true");
-//						answerResDto.setTestCase(true, e-s);
-						return new AnswerResDto.TestCase(true, e-s);
-					} else {
-//						System.out.println("false");
-//						answerResDto.setTestCase(false, e-s);
-						return new AnswerResDto.TestCase(false, e-s);
-					}
-				}
-			};
-			
-			Future future = executor.submit(task);
-			Object obj = future.get(question.getLimitTime(), TimeUnit.MILLISECONDS);
-			return (TestCase) obj;
-		} catch (TimeoutException e) {
-			System.out.println("timeout");
-			return new AnswerResDto.TestCase(false, question.getLimitTime().longValue());
-//			throw new RuntimeTimeoutException("RuntimeError", "Runtime timeout", null);
-		} catch (Exception e) {
-			throw new RuntimeException("ClassNotFoundException", e);
-		}
-	}
-	
-	private void compileCode(String path) {
-		CmdUtil.compile(path, this.className);
-	}
-	
-	private void saveFile(String code, String path) {
-		try {
-			File folder = new File(path);
-			if (!folder.exists())
-				folder.mkdirs();
-		} catch (Exception e) {
-			throw new DirectoryCreateFailedException("Directory", "Directory path:" + path, null);
-		}
-		
-		try {
-			FileUtil.saveFile(path + this.className + this.classExtension, code);
-		} catch (IOException e) {
-			throw new FileCreateFailedException("File", "File path:" + path + this.className + this.classExtension, null);
-		}
-	}
-	
-	private Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
-		ObjectStrategy object = null;
-		if (type2.equals(Parameter.Type2.single.name())) {
-			if (type.equals("int") || type.equals("Integer")) {
-				object = new IntegerStrategy();
-			} else if (type.equals("String")) {
-				object = new StringStrategy();
-			}
-		} else {
-			if (type.equals("int[]")) {
-				object = new IntegerArrayStrategy();
-			} else if (type.equals("String[]")) {
-				object = new StringArrayStrategy();
-			} else if (type.equals("int[][]")) {
-				object = new IntegerMultiArrayStrategy();
-			}
-		}
-		return object.getTypeAndValue(value);
-	}
-	
-	private AnswerResDto verify2(Question question, User user, String code, String path) {
 		String url = path + this.className + this.classExtension;
 		Answer answer = this.getAnswer(user.getId(), question.getId());
 		if (answer != null && answer.isSubmitYn())
@@ -547,5 +261,25 @@ public class AnswerServiceImpl implements AnswerService {
 		answerResDto.setAnswerId(answer.getId());
 		
 		return answerResDto;
+	}
+	
+	private Object setObjectStrategy(String type, String value, String type2) throws ClassNotFoundException {
+		ObjectStrategy object = null;
+		if (type2.equals(Parameter.Type2.single.name())) {
+			if (type.equals("int") || type.equals("Integer")) {
+				object = new IntegerStrategy();
+			} else if (type.equals("String")) {
+				object = new StringStrategy();
+			}
+		} else {
+			if (type.equals("int[]")) {
+				object = new IntegerArrayStrategy();
+			} else if (type.equals("String[]")) {
+				object = new StringArrayStrategy();
+			} else if (type.equals("int[][]")) {
+				object = new IntegerMultiArrayStrategy();
+			}
+		}
+		return object.getTypeAndValue(value);
 	}
 }
