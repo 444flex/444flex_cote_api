@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
+import com.flex.api.exception.ServerSideException;
+
 public class ReflectionUtil {
 	
 	private Class<?> cls;
@@ -65,24 +67,8 @@ public class ReflectionUtil {
 			URLClassLoader ucl = new URLClassLoader(urls);
 			cls = Class.forName(fileName, true, ucl);
 			obj = cls.newInstance();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new ServerSideException("ClassLoader", "Load Class Failed", e);
 		}
 	}
 	
@@ -100,7 +86,7 @@ public class ReflectionUtil {
 		try {
 			object = m.invoke(obj, param);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			throw new ServerSideException("Method Executor", "Execute Method Failed", e);
 		}
 		return object;
 	}
