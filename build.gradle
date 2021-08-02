@@ -43,8 +43,7 @@ dependencies {
 	implementation 'commons-httpclient:commons-httpclient:3.1'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-	
-	
+	implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.3'
 }
 
 test {

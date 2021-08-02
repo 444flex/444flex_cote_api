@@ -49,7 +49,7 @@ public class SlackUtil {
 			int responseCode = client.executeMethod(post);
 			String response = post.getResponseBodyAsString();
 			if (responseCode != HttpStatus.SC_OK) {
-				System.out.println("Response: " + response);
+				throw new ServerSideException("SlackUtil", response, null);
 			}
 		} catch (IllegalArgumentException e) {
 			throw new ServerSideException("SlackUtil", "IllegalArgumentException posting to Slack", e);
@@ -74,7 +74,7 @@ public class SlackUtil {
 			int responseCode = client.executeMethod(post);
 			String response = post.getResponseBodyAsString();
 			if (responseCode != HttpStatus.SC_OK) {
-				System.out.println("Response: " + response);
+				throw new ServerSideException("SlackUtil", response, null);
 			}
 		} catch (IllegalArgumentException e) {
 			throw new ServerSideException("SlackUtil", "IllegalArgumentException posting to Slack", e);

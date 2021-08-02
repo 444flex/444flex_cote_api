@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: dev
-    password: searchdev
+    url: ENC[OqQsMISkibN3Wd6RFj+j3X09od58eixNjzY5FBnsv/TmOwUVi8vLWSSfcSGvev10RQm9S0JBmbw9Kk3e33ZvTmsWAQaKI1rJz8p26u/4rkY1il1lw0bZ1UUbiZ3qer77GOaDyHdmJA/uR3WQx2mt5w==]
+    username: ENC[xgEzoxNePdF5Z0ODLT7sxg==]
+    password: ENC[PJ9CEBLkvfsOCKlu6EAZOR+FsNMdKkBF]
     driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     activate:
@@ -45,25 +45,32 @@ flex:
     name: solution
   slack:
     default:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[hUQXFJwKTXKUX09pnGxy+V++cHm3B/Xy2OwP5WYkI99qFkxuBV9kj5DRK9K09TzvGtG2dgQcEAN7RvXpDZqCwodmhfB+nIvKru8B/5adr6rg4KwKFKWwU2LC0pnEQy8V]
       channel: submit_status
       icon_emoji: tory
       username: 토리
     error:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[PqTljbUogvKIEUXXiyudW8Wjk6W9Xv1cqtA/1EiBox4x1Ro4//NG/kaevooRnYWWjC2nCq1jjACy7NMQQN7+xw1rX+iLGw+YJLDynU6Jz78RFkb0LWYnuvNLByHfuWy8]
       channel: error_alert
   auth:
     token:
       ttl: 7200
       secretkey: testsecretkey
+      
+jasypt:
+  encryptor:
+    bean: encryptorBean
+    property:
+      prefix: "ENC["
+      suffix: "]"
 
 ---
 
 spring:
   datasource:
-    url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: dev
-    password: searchdev
+    url: ENC[OqQsMISkibN3Wd6RFj+j3X09od58eixNjzY5FBnsv/TmOwUVi8vLWSSfcSGvev10RQm9S0JBmbw9Kk3e33ZvTmsWAQaKI1rJz8p26u/4rkY1il1lw0bZ1UUbiZ3qer77GOaDyHdmJA/uR3WQx2mt5w==]
+    username: ENC[xgEzoxNePdF5Z0ODLT7sxg==]
+    password: ENC[PJ9CEBLkvfsOCKlu6EAZOR+FsNMdKkBF]
     driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     activate:
@@ -106,17 +113,24 @@ flex:
     name: solution
   slack:
     default:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[hUQXFJwKTXKUX09pnGxy+V++cHm3B/Xy2OwP5WYkI99qFkxuBV9kj5DRK9K09TzvGtG2dgQcEAN7RvXpDZqCwodmhfB+nIvKru8B/5adr6rg4KwKFKWwU2LC0pnEQy8V]
       channel: submit_status
       icon_emoji: tory
       username: 토리
     error:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[PqTljbUogvKIEUXXiyudW8Wjk6W9Xv1cqtA/1EiBox4x1Ro4//NG/kaevooRnYWWjC2nCq1jjACy7NMQQN7+xw1rX+iLGw+YJLDynU6Jz78RFkb0LWYnuvNLByHfuWy8]
       channel: error_alert
   auth:
     token:
       ttl: 7200
       secretkey: testsecretkey
+      
+jasypt:
+  encryptor:
+    bean: encryptorBean
+    property:
+      prefix: "ENC["
+      suffix: "]"
 
 ---
 # DataSource
@@ -125,9 +139,9 @@ spring:
     activate:
       on-profile: stg
   datasource:
-    url: jdbc:mysql://www.joonsoo.net:13306/dev_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: SearchDev
-    password: lotte1234!
+    url: ENC[OqQsMISkibN3Wd6RFj+j3X09od58eixNjzY5FBnsv/TmOwUVi8vLWSSfcSGvev10RQm9S0JBmbw9Kk3e33ZvTmsWAQaKI1rJz8p26u/4rkY1il1lw0bZ1UUbiZ3qer77GOaDyHdmJA/uR3WQx2mt5w==]
+    username: ENC[xgEzoxNePdF5Z0ODLT7sxg==]
+    password: ENC[PJ9CEBLkvfsOCKlu6EAZOR+FsNMdKkBF]
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 server:
@@ -167,17 +181,24 @@ flex:
     name: solution
   slack:
     default:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[hUQXFJwKTXKUX09pnGxy+V++cHm3B/Xy2OwP5WYkI99qFkxuBV9kj5DRK9K09TzvGtG2dgQcEAN7RvXpDZqCwodmhfB+nIvKru8B/5adr6rg4KwKFKWwU2LC0pnEQy8V]
       channel: submit_status
       icon_emoji: tory
       username: 토리
     error:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[PqTljbUogvKIEUXXiyudW8Wjk6W9Xv1cqtA/1EiBox4x1Ro4//NG/kaevooRnYWWjC2nCq1jjACy7NMQQN7+xw1rX+iLGw+YJLDynU6Jz78RFkb0LWYnuvNLByHfuWy8]
       channel: error_alert
   auth:
     token:
       ttl: 7200
       secretkey: testsecretkey
+      
+jasypt:
+  encryptor:
+    bean: encryptorBean
+    property:
+      prefix: "ENC["
+      suffix: "]"
 
 ---
 
@@ -187,9 +208,9 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:mysql://www.joonsoo.net:13306/search_dev?autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: dev
-    password: searchdev
+    url: ENC[OqQsMISkibN3Wd6RFj+j3X09od58eixNjzY5FBnsv/TmOwUVi8vLWSSfcSGvev10RQm9S0JBmbw9Kk3e33ZvTmsWAQaKI1rJz8p26u/4rkY1il1lw0bZ1UUbiZ3qer77GOaDyHdmJA/uR3WQx2mt5w==]
+    username: ENC[xgEzoxNePdF5Z0ODLT7sxg==]
+    password: ENC[PJ9CEBLkvfsOCKlu6EAZOR+FsNMdKkBF]
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -231,14 +252,22 @@ flex:
     name: solution
   slack:
     default:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[hUQXFJwKTXKUX09pnGxy+V++cHm3B/Xy2OwP5WYkI99qFkxuBV9kj5DRK9K09TzvGtG2dgQcEAN7RvXpDZqCwodmhfB+nIvKru8B/5adr6rg4KwKFKWwU2LC0pnEQy8V]
       channel: submit_status
       icon_emoji: tory
       username: 토리
     error:
-      webhook: https://hooks.slack.com/services/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
+      webhook: ENC[PqTljbUogvKIEUXXiyudW8Wjk6W9Xv1cqtA/1EiBox4x1Ro4//NG/kaevooRnYWWjC2nCq1jjACy7NMQQN7+xw1rX+iLGw+YJLDynU6Jz78RFkb0LWYnuvNLByHfuWy8]
       channel: error_alert
   auth:
     token:
       ttl: 7200
       secretkey: testsecretkey
+      
+jasypt:
+  encryptor:
+    bean: encryptorBean
+    property:
+      prefix: "ENC["
+      suffix: "]"
+      
