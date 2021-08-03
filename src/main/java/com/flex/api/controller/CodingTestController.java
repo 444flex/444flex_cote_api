@@ -57,12 +57,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "로그인", notes = "로그인")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@PostMapping("/user")
 	@ResponseStatus(value = HttpStatus.OK)
 	@Deprecated
@@ -76,12 +76,12 @@ public class CodingTestController {
 	@RequiredToken
 	@ApiOperation(value = "문제 목록 조회", notes = "문제 목록 조회")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping("/questions")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<Question>> getQuestionList( 
@@ -92,12 +92,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "문제 상세 조회", notes = "문제 상세 조회")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping("/question/{question_id}")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<QuestionResDto> getQuestionList(
@@ -110,12 +110,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "답변 제출", notes = "답변 제출")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@PostMapping("/answer")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<AnswerResDto> insertAnswer(
@@ -129,12 +129,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "최종 답변 제출", notes = "최종 답변 제출")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@PutMapping("/answer")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<AnswerSubmitResDto> updateAnswer(
@@ -148,12 +148,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "답변 제출 여부 확인", notes = "답변 제출 여부 확인")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping("/answer/check/{question_id}")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<AnswerSubmitResDto> submitAnswerCheck(
@@ -166,12 +166,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "답변 초기화", notes = "답변 완전 삭제")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "조회 성공"),
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"),
-			@ApiResponse(code = 401, message = "사용자 인증 실패"),
-			@ApiResponse(code = 403, message = "사용자 인증 만료, 접근권한 제한"),
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"),
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@DeleteMapping("/answer/{question_id}")
 	@ResponseStatus(value = HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> deleteAnswer(
@@ -184,10 +184,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "현재 시간", notes = "현재 시간 api")
 	@ApiResponses(value = { //
-			@ApiResponse(code = 200, message = "조회 성공"), //
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping("/time")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<Long> getTime() {
@@ -196,10 +198,12 @@ public class CodingTestController {
 	
 	@ApiOperation(value = "현재 프로파일", notes = "프로파일 리턴 api")
 	@ApiResponses(value = { //
-			@ApiResponse(code = 200, message = "조회 성공"), //
-			@ApiResponse(code = 400, message = "올바르지 않은 입력값 존재"), //
-			@ApiResponse(code = 404, message = "정보가 존재하지 않음"), //
-			@ApiResponse(code = 500, message = "시스템 장애") })
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	@ResponseStatus(value = HttpStatus.OK)
 	public String getProfile(){
